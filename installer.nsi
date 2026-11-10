@@ -14,7 +14,8 @@ Unicode true
 
 Name "${APP_NAME}"
 OutFile "dist\ExileRoute-Setup.exe"
-InstallDir "$LOCALAPPDATA\Programs\PoEActOverlay"
+InstallDir "$LOCALAPPDATA\Programs\ExileRoute"
+InstallDirRegKey HKCU "${ARP_KEY}" "InstallLocation"
 RequestExecutionLevel user
 SetCompressor /SOLID lzma
 VIProductVersion "${APP_VERSION}.0"
@@ -31,6 +32,7 @@ VIAddVersionKey /LANG=1033 "LegalCopyright" "Copyright (c) 2026 alexaseee"
 !define MUI_FINISHPAGE_SHOWREADME_NOTCHECKED
 !define MUI_ICON "ExileRoute.ico"
 !define MUI_UNICON "ExileRoute.ico"
+!insertmacro MUI_PAGE_DIRECTORY
 !insertmacro MUI_PAGE_INSTFILES
 !insertmacro MUI_PAGE_FINISH
 !insertmacro MUI_UNPAGE_CONFIRM
@@ -46,6 +48,8 @@ LangString CloseOverlay ${LANG_RUSSIAN} "Закройте ExileRoute и повт
 LangString CloseOverlay ${LANG_ENGLISH} "Close ExileRoute and try again."
 LangString DesktopShortcut ${LANG_RUSSIAN} "Создать ярлык на рабочем столе"
 LangString DesktopShortcut ${LANG_ENGLISH} "Create a desktop shortcut"
+
+Var PreviousInstallDir
 
 Function CreateDesktopShortcut
     SetShellVarContext current
@@ -70,6 +74,7 @@ Function .onInit
         Abort
     ${EndIf}
     SetRegView 64
+    ReadRegStr $PreviousInstallDir HKCU "${ARP_KEY}" "InstallLocation"
     ReadRegDWORD $0 HKLM "SOFTWARE\Microsoft\NET Framework Setup\NDP\v4\Full" "Release"
     ${If} $0 < 528040
         MessageBox MB_OK|MB_ICONEXCLAMATION "$(MissingFramework)" /SD IDOK
@@ -88,6 +93,8 @@ Section "Install"
     File "THIRD_PARTY_NOTICES.md"
     WriteUninstaller "$INSTDIR\Uninstall.exe"
     CreateShortcut "$SMPROGRAMS\${APP_NAME}.lnk" "$INSTDIR\${APP_EXE}"
+    IfFileExists "$DESKTOP\${APP_NAME}.lnk" 0 +2
+        Call CreateDesktopShortcut
 
     WriteRegStr HKCU "${ARP_KEY}" "DisplayName" "${APP_NAME}"
     WriteRegStr HKCU "${ARP_KEY}" "DisplayVersion" "${APP_VERSION}"
@@ -101,6 +108,18 @@ Section "Install"
     ; Remove the old executable and shortcut after installing the renamed app.
     Delete "$INSTDIR\PoEActOverlay.exe"
     Delete "$SMPROGRAMS\PoE Act Overlay.lnk"
+    GetFullPathName $0 "$PreviousInstallDir\${APP_EXE}"
+    GetFullPathName $1 "$INSTDIR\${APP_EXE}"
+    ${If} $PreviousInstallDir != ""
+    ${AndIf} $0 != $1
+        ; Delete only files installed by this app when changing the install folder.
+        Delete "$PreviousInstallDir\ExileRoute.exe"
+        Delete "$PreviousInstallDir\PoEActOverlay.exe"
+        Delete "$PreviousInstallDir\LICENSE"
+        Delete "$PreviousInstallDir\THIRD_PARTY_NOTICES.md"
+        Delete "$PreviousInstallDir\Uninstall.exe"
+        RMDir "$PreviousInstallDir"
+    ${EndIf}
 SectionEnd
 
 Function un.onInit
