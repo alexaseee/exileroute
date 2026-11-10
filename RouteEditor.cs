@@ -27,7 +27,7 @@ internal sealed class RouteEditor : Panel
     private List<RouteNote> notes;
     private bool readOnly;
 
-    public RouteEditor(Action changed, Action<RouteNote, bool> setDone)
+    public RouteEditor(Action changed, Action<RouteNote, bool> setDone, Func<bool> canComplete)
     {
         this.changed = changed;
         BackColor = Theme.Background;
@@ -48,7 +48,7 @@ internal sealed class RouteEditor : Panel
         Controls.Add(catalog);
         Theme.Label(this, "Порядок", 9, Theme.Muted, new Rectangle(474, 46, 62, 30), english: "Order").Anchor = AnchorStyles.Top | AnchorStyles.Right;
 
-        grid = Theme.Grid(new Rectangle(14, 83, 604, 111), () => !readOnly);
+        grid = Theme.Grid(new Rectangle(14, 83, 604, 111), canComplete);
         grid.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
         grid.RowTemplate.Height = 27;
         grid.Columns.Add(new DataGridViewCheckBoxColumn { HeaderText = "✓", Width = 38, FlatStyle = FlatStyle.Flat });
@@ -65,7 +65,7 @@ internal sealed class RouteEditor : Panel
         grid.SelectionChanged += (sender, args) => UpdateButtons();
         grid.CellContentClick += (sender, args) =>
         {
-            if (readOnly || args.RowIndex < 0 || args.ColumnIndex != 0) return;
+            if (!canComplete() || args.RowIndex < 0 || args.ColumnIndex != 0) return;
             RouteNote note = notes[args.RowIndex];
             setDone(note, !note.Done);
         };

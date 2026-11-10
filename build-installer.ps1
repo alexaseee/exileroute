@@ -1,5 +1,5 @@
 param(
-    [string]$Version = '0.1.0',
+    [string]$Version = '0.2.0',
     [string]$Makensis
 )
 
@@ -35,7 +35,7 @@ try {
     New-Item -ItemType Directory -Path .\dist -Force | Out-Null
     & $Makensis /INPUTCHARSET UTF8 "/DAPP_VERSION=$Version" .\installer.nsi
     if ($LASTEXITCODE -ne 0) { throw 'Installer build failed.' }
-    Get-Item -LiteralPath .\dist\PoEActOverlay-Setup.exe
+    Get-Item -LiteralPath .\dist\ExileRoute-Setup.exe
 } finally {
     Pop-Location
 }

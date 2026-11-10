@@ -6,6 +6,7 @@ using System.IO;
 using System.Linq;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Json;
+using System.Text;
 using System.Windows.Forms;
 
 [DataContract]
@@ -14,14 +15,17 @@ internal sealed class OverlayProfile
     public const int ActCount = 10;
     public const string BuiltInName = "Основной";
     public const string BuiltInEnglishName = "Default";
+    private const string ExileLevelingName = "Exile Leveling";
 
     [DataMember] public string Name;
     [DataMember(EmitDefaultValue = false)] public bool IsBuiltIn { get; private set; }
-    [DataMember(Name = "Tasks", EmitDefaultValue = false)] private List<ActTask>[] tasks;
-    [DataMember(Name = "Routes", EmitDefaultValue = false)] private List<RouteNote>[] routes;
+    [DataMember(EmitDefaultValue = false)] public bool IsExileLeveling { get; private set; }
+    [DataMember(Name = "Tasks", EmitDefaultValue = false, Order = 1)] private List<ActTask>[] tasks;
+    [DataMember(Name = "Routes", EmitDefaultValue = false, Order = 2)] private List<RouteNote>[] routes;
 
-    public List<ActTask>[] Tasks { get { return IsBuiltIn ? BuiltInProfile.Content.Tasks : tasks; } }
-    public List<RouteNote>[] Routes { get { return IsBuiltIn ? BuiltInProfile.Content.Routes : routes; } }
+    public bool ContentReadOnly { get { return IsBuiltIn && (IsExileLeveling || !BuiltInProfile.AuthorBuild); } }
+    public List<ActTask>[] Tasks { get { return IsBuiltIn ? BuiltInProfile.GetContent(IsExileLeveling).Tasks : tasks; } }
+    public List<RouteNote>[] Routes { get { return IsBuiltIn ? BuiltInProfile.GetContent(IsExileLeveling).Routes : routes; } }
 
     private OverlayProfile() { }
 
@@ -35,7 +39,7 @@ internal sealed class OverlayProfile
     {
         if (IsBuiltIn)
         {
-            Name = BuiltInName;
+            Name = IsExileLeveling ? ExileLevelingName : BuiltInName;
             tasks = null;
             routes = null;
             return;
@@ -47,6 +51,11 @@ internal sealed class OverlayProfile
     public static OverlayProfile CreateBuiltIn()
     {
         return new OverlayProfile { Name = BuiltInName, IsBuiltIn = true };
+    }
+
+    public static OverlayProfile CreateExileLeveling()
+    {
+        return new OverlayProfile { Name = ExileLevelingName, IsBuiltIn = true, IsExileLeveling = true };
     }
 
     private static void Normalize<T>(ref List<T>[] lists)
@@ -68,7 +77,7 @@ internal sealed class OverlayProfile
         return copy;
     }
 
-    public override string ToString() { return IsBuiltIn ? UiText.Get(BuiltInName, BuiltInEnglishName) : Name; }
+    public override string ToString() { return IsBuiltIn && !IsExileLeveling ? UiText.Get(BuiltInName, BuiltInEnglishName) : Name; }
 }
 
 internal static class BuiltInProfile
@@ -76,28 +85,68 @@ internal static class BuiltInProfile
     [DataContract]
     private sealed class LocalizedProfiles
     {
-        [DataMember] public OverlayProfile Russian { get; private set; }
-        [DataMember] public OverlayProfile English { get; private set; }
+        [DataMember(Order = 0)] public OverlayProfile Russian { get; private set; }
+        [DataMember(Order = 1)] public OverlayProfile English { get; private set; }
     }
 
-    private static readonly LocalizedProfiles Profiles = Load();
+    private const string DefaultFileName = "BuiltInProfile.json";
+    private static readonly DataContractJsonSerializer Serializer = new DataContractJsonSerializer(typeof(LocalizedProfiles));
+#if EDIT_DEFAULT_PROFILE
+    public static readonly bool AuthorBuild = true;
+    private static readonly string DefaultPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, DefaultFileName);
+    private static readonly LocalizedProfiles Default = Load(File.OpenRead(DefaultPath));
+#else
+    public static readonly bool AuthorBuild = false;
+    private static readonly LocalizedProfiles Default = Load(OpenResource(DefaultFileName));
+#endif
+    private static readonly LocalizedProfiles ExileLeveling = Load(OpenResource("ExileLevelingProfile.json"));
 
-    public static OverlayProfile Content { get { return UiText.English ? Profiles.English : Profiles.Russian; } }
-
-    private static LocalizedProfiles Load()
+    public static OverlayProfile GetContent(bool exileLeveling)
     {
-        using (Stream stream = typeof(BuiltInProfile).Assembly.GetManifestResourceStream("BuiltInProfile.json"))
+        LocalizedProfiles profiles = exileLeveling ? ExileLeveling : Default;
+        return UiText.English ? profiles.English : profiles.Russian;
+    }
+
+    private static Stream OpenResource(string name)
+    {
+        return typeof(BuiltInProfile).Assembly.GetManifestResourceStream(name);
+    }
+
+    private static LocalizedProfiles Load(Stream stream)
+    {
+        using (stream)
         {
-            var profiles = (LocalizedProfiles)new DataContractJsonSerializer(typeof(LocalizedProfiles)).ReadObject(stream);
+            var profiles = (LocalizedProfiles)Serializer.ReadObject(stream);
             profiles.Russian.NormalizeActs();
             profiles.English.NormalizeActs();
             return profiles;
         }
     }
 
+#if EDIT_DEFAULT_PROFILE
+    public static void SaveDefault()
+    {
+        string temporary = DefaultPath + ".tmp";
+        try
+        {
+            using (var file = File.Create(temporary))
+            {
+                using (var writer = JsonReaderWriterFactory.CreateJsonWriter(file, new UTF8Encoding(false), false, true, "  "))
+                    Serializer.WriteObject(writer, Default);
+                file.WriteByte((byte)'\n');
+            }
+            File.Replace(temporary, DefaultPath, null);
+        }
+        finally
+        {
+            File.Delete(temporary);
+        }
+    }
+#endif
+
     public static bool MatchesRussian(OverlayProfile source)
     {
-        OverlayProfile russian = Profiles.Russian;
+        OverlayProfile russian = Default.Russian;
         for (int i = 0; i < OverlayProfile.ActCount; i++)
         {
             if (!source.Tasks[i].Select(task => new { task.Condition, task.Action, task.Done })
@@ -147,7 +196,8 @@ internal sealed class ProfileNameDialog : Form
         {
             string name = ProfileName;
             bool duplicate = profiles.Any(profile => String.Equals(profile.Name, name, StringComparison.OrdinalIgnoreCase) ||
-                (profile.IsBuiltIn && String.Equals(OverlayProfile.BuiltInEnglishName, name, StringComparison.OrdinalIgnoreCase)));
+                (profile.IsBuiltIn && !profile.IsExileLeveling &&
+                    String.Equals(OverlayProfile.BuiltInEnglishName, name, StringComparison.OrdinalIgnoreCase)));
             create.Enabled = name.Length > 0 && !duplicate;
             status.Text = duplicate ? UiText.Get("Профиль с таким именем уже есть.", "A profile with this name already exists.") : "";
         };

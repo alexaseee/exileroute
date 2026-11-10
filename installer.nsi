@@ -8,23 +8,25 @@ Unicode true
     !error "Set APP_VERSION or run build-installer.ps1."
 !endif
 
-!define APP_NAME "PoE Act Overlay"
-!define APP_EXE "PoEActOverlay.exe"
+!define APP_NAME "ExileRoute"
+!define APP_EXE "ExileRoute.exe"
 !define ARP_KEY "Software\Microsoft\Windows\CurrentVersion\Uninstall\PoEActOverlay"
 
 Name "${APP_NAME}"
-OutFile "dist\PoEActOverlay-Setup.exe"
+OutFile "dist\ExileRoute-Setup.exe"
 InstallDir "$LOCALAPPDATA\Programs\PoEActOverlay"
 RequestExecutionLevel user
 SetCompressor /SOLID lzma
 VIProductVersion "${APP_VERSION}.0"
 VIAddVersionKey /LANG=1033 "ProductName" "${APP_NAME}"
-VIAddVersionKey /LANG=1033 "FileDescription" "PoE Act Overlay Setup"
+VIAddVersionKey /LANG=1033 "FileDescription" "ExileRoute Setup"
 VIAddVersionKey /LANG=1033 "FileVersion" "${APP_VERSION}"
 VIAddVersionKey /LANG=1033 "ProductVersion" "${APP_VERSION}"
 VIAddVersionKey /LANG=1033 "LegalCopyright" "Copyright (c) 2026 alexaseee"
 
 !define MUI_FINISHPAGE_RUN "$INSTDIR\${APP_EXE}"
+!define MUI_ICON "ExileRoute.ico"
+!define MUI_UNICON "ExileRoute.ico"
 !insertmacro MUI_PAGE_INSTFILES
 !insertmacro MUI_PAGE_FINISH
 !insertmacro MUI_UNPAGE_CONFIRM
@@ -36,8 +38,8 @@ LangString UnsupportedWindows ${LANG_RUSSIAN} "Требуется Windows 10 и�
 LangString UnsupportedWindows ${LANG_ENGLISH} "Windows 10 or 11 x64 is required."
 LangString MissingFramework ${LANG_RUSSIAN} "Установите Microsoft .NET Framework 4.8 или новее и повторите установку."
 LangString MissingFramework ${LANG_ENGLISH} "Install Microsoft .NET Framework 4.8 or later and run Setup again."
-LangString CloseOverlay ${LANG_RUSSIAN} "Закройте PoE Act Overlay и повторите операцию."
-LangString CloseOverlay ${LANG_ENGLISH} "Close PoE Act Overlay and try again."
+LangString CloseOverlay ${LANG_RUSSIAN} "Закройте ExileRoute и повторите операцию."
+LangString CloseOverlay ${LANG_ENGLISH} "Close ExileRoute and try again."
 
 !macro RequireClosed
     System::Call 'kernel32::OpenMutexW(i 0x00100000, i 0, w "Local\PoEActOverlay") p.r0'
@@ -84,6 +86,10 @@ Section "Install"
     WriteRegStr HKCU "${ARP_KEY}" "UninstallString" '"$INSTDIR\Uninstall.exe"'
     WriteRegDWORD HKCU "${ARP_KEY}" "NoModify" 1
     WriteRegDWORD HKCU "${ARP_KEY}" "NoRepair" 1
+
+    ; Remove the old executable and shortcut after installing the renamed app.
+    Delete "$INSTDIR\PoEActOverlay.exe"
+    Delete "$SMPROGRAMS\PoE Act Overlay.lnk"
 SectionEnd
 
 Function un.onInit

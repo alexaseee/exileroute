@@ -16,7 +16,7 @@ internal static class Theme
     public static readonly Color Muted = Color.FromArgb(174, 192, 209);
     public static readonly Color Accent = Color.FromArgb(96, 219, 200);
     public static readonly Color Warning = Color.FromArgb(231, 181, 124);
-    private static readonly Color Selected = Color.FromArgb(34, 59, 68);
+    public static readonly Color Selected = Color.FromArgb(34, 59, 68);
     private static readonly Color Disabled = Color.FromArgb(123, 145, 165);
 
     public static void StyleWindow(Form form)

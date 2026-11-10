@@ -3,12 +3,16 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Json;
 using System.Threading;
 using System.Windows.Forms;
 using Timer = System.Windows.Forms.Timer;
+
+[assembly: AssemblyTitle("ExileRoute")]
+[assembly: AssemblyProduct("ExileRoute")]
 
 [DataContract]
 internal sealed class ActTask
@@ -35,7 +39,8 @@ internal sealed class OverlaySettings
     private static readonly DataContractJsonSerializer Serializer = new DataContractJsonSerializer(typeof(OverlaySettings));
 
     [DataMember] public string LogPath;
-    [DataMember] public List<OverlayProfile> Profiles = new List<OverlayProfile> { OverlayProfile.CreateBuiltIn() };
+    [DataMember] public List<OverlayProfile> Profiles = new List<OverlayProfile>
+        { OverlayProfile.CreateBuiltIn(), OverlayProfile.CreateExileLeveling() };
     [DataMember] public int ActiveProfileIndex;
     [DataMember(Name = "Tasks", EmitDefaultValue = false)] private List<ActTask>[] legacyTasks;
     [DataMember(Name = "Routes", EmitDefaultValue = false)] private List<RouteNote>[] legacyRoutes;
@@ -90,6 +95,8 @@ internal sealed class OverlaySettings
         foreach (OverlayProfile profile in Profiles) profile.NormalizeActs();
         if (ActiveProfileIndex < 0 || ActiveProfileIndex >= Profiles.Count) ActiveProfileIndex = 0;
         EnsureBuiltInProfile();
+        if (!Profiles.Any(profile => profile.IsExileLeveling))
+            Profiles.Add(OverlayProfile.CreateExileLeveling());
         legacyTasks = null;
         legacyRoutes = null;
         legacyNotes = null;
@@ -98,7 +105,7 @@ internal sealed class OverlaySettings
 
     private void EnsureBuiltInProfile()
     {
-        if (Profiles.Any(profile => profile.IsBuiltIn)) return;
+        if (Profiles.Any(profile => profile.IsBuiltIn && !profile.IsExileLeveling)) return;
         int index = Profiles.FindIndex(profile => String.Equals(profile.Name, OverlayProfile.BuiltInName, StringComparison.OrdinalIgnoreCase));
         var builtIn = OverlayProfile.CreateBuiltIn();
         if (index >= 0)
@@ -160,6 +167,8 @@ internal sealed class OverlaySettings
 
 internal static class Program
 {
+    public const string AppName = "ExileRoute";
+
     [STAThread]
     private static void Main()
     {
@@ -176,14 +185,15 @@ internal static class Program
                 if (!first)
                 {
                     MessageBox.Show(UiText.Get("Оверлей уже запущен. Откройте его редактор через панель задач.",
-                        "The overlay is already running. Open the editor from the taskbar."), "PoE Act Overlay");
+                        "The overlay is already running. Open the editor from the taskbar."), AppName);
                     return;
                 }
-                Application.Run(new EditorForm(settings));
+                using (var icon = Icon.ExtractAssociatedIcon(Application.ExecutablePath))
+                    Application.Run(new EditorForm(settings) { Icon = icon });
             }
             catch (Exception error)
             {
-                MessageBox.Show(error.Message, "PoE Act Overlay", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(error.Message, AppName, MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
     }
@@ -222,6 +232,9 @@ internal sealed class EditorForm : Form
     private int selectedAct = 1;
     private int? previewAct;
     private bool dirty;
+#if EDIT_DEFAULT_PROFILE
+    private bool defaultProfileDirty;
+#endif
     private bool shortcutReady;
 
     public EditorForm(OverlaySettings settings)
@@ -229,12 +242,14 @@ internal sealed class EditorForm : Form
         this.settings = settings;
         UiText.English = settings.Language == "en";
         SuspendLayout();
-        UiText.Bind(this, "PoE Act Overlay — редактор", "PoE Act Overlay — Editor");
+        if (BuiltInProfile.AuthorBuild)
+            UiText.Bind(this, Program.AppName + " — режим автора", Program.AppName + " — Author mode");
+        else
+            UiText.Bind(this, Program.AppName + " — редактор", Program.AppName + " — Editor");
         Theme.StyleWindow(this);
         ClientSize = new Size(688, 586);
         FormBorderStyle = FormBorderStyle.Sizable;
         MaximizeBox = false;
-        ShowIcon = false;
         StartPosition = FormStartPosition.CenterScreen;
         AutoScaleDimensions = new SizeF(96, 96);
         AutoScaleMode = AutoScaleMode.Dpi;
@@ -253,8 +268,7 @@ internal sealed class EditorForm : Form
         Theme.Button(this, "Настройки", new Rectangle(551, 22, 109, 24), (sender, args) => ShowOverlaySettings(), english: "Settings")
             .Anchor = AnchorStyles.Top | AnchorStyles.Right;
         Theme.Label(this, "План кампании", 24, Theme.Text, new Rectangle(26, 46, 634, 48), true, "Campaign plan");
-        profileStatus = Theme.Label(this, "Встроенный · только чтение", 9, Theme.Accent, new Rectangle(453, 57, 207, 28), true,
-            "Built-in · read-only");
+        profileStatus = Theme.Label(this, "", 9, Theme.Accent, new Rectangle(453, 57, 207, 28), true);
         profileStatus.TextAlign = ContentAlignment.MiddleRight;
         profileStatus.Anchor = AnchorStyles.Top | AnchorStyles.Right;
         profileStatus.BringToFront();
@@ -319,9 +333,9 @@ internal sealed class EditorForm : Form
 
         routeEditor = new RouteEditor(() =>
         {
-            ScheduleSave();
+            ScheduleProfileSave();
             UpdateOverlay(routeEdited: true);
-        }, SetRouteNoteDone) { Dock = DockStyle.Fill };
+        }, SetRouteNoteDone, () => !settings.ActiveProfile.IsBuiltIn) { Dock = DockStyle.Fill };
         editorPanel.Controls.Add(routeEditor);
         regexEditor = new RegexEditor(settings.RegexEntries, ScheduleSave) { Dock = DockStyle.Fill };
         editorPanel.Controls.Add(regexEditor);
@@ -570,9 +584,12 @@ internal sealed class EditorForm : Form
     private void SelectAct(int act)
     {
         selectedAct = act;
-        bool readOnly = settings.ActiveProfile.IsBuiltIn;
-        profileStatus.Visible = readOnly;
-        deleteProfileButton.Enabled = !readOnly && settings.Profiles.Count > 1;
+        OverlayProfile profile = settings.ActiveProfile;
+        profileStatus.Visible = profile.IsBuiltIn;
+        profileStatus.Text = profile.ContentReadOnly
+            ? UiText.Get("Встроенный · только чтение", "Built-in · read-only")
+            : UiText.Get("Редактирование оригинала · RU", "Editing the original · EN");
+        deleteProfileButton.Enabled = !profile.IsBuiltIn && settings.Profiles.Count > 1;
         for (int i = 0; i < actButtons.Length; i++)
         {
             bool selected = i + 1 == selectedAct;
@@ -580,7 +597,7 @@ internal sealed class EditorForm : Form
             actButtons[i].ForeColor = selected ? Theme.Background : Theme.Text;
         }
         RefreshTaskGrid();
-        routeEditor.LoadAct(act, settings.Routes[act - 1], readOnly);
+        routeEditor.LoadAct(act, settings.Routes[act - 1], profile.ContentReadOnly);
         if (previewAct.HasValue) previewAct = act;
         UpdateOverlay();
     }
@@ -664,7 +681,7 @@ internal sealed class EditorForm : Form
             if (task == selection) taskGrid.CurrentCell = row.Cells[1];
         }
         noTasks.Visible = SelectedActTasks.Count == 0;
-        if (settings.ActiveProfile.IsBuiltIn)
+        if (settings.ActiveProfile.ContentReadOnly)
             UiText.Bind(noTasks, "В этом акте нет задач. Откройте вкладку «Маршрут».", "This act has no tasks. Open the Route tab.");
         else
             UiText.Bind(noTasks, "Пока нет задач. Добавьте первую задачу для этого акта.", "No tasks yet. Add your first task for this act.");
@@ -673,14 +690,14 @@ internal sealed class EditorForm : Form
 
     private void UpdateTaskButtons()
     {
-        addTaskButton.Enabled = !settings.ActiveProfile.IsBuiltIn;
+        addTaskButton.Enabled = !settings.ActiveProfile.ContentReadOnly;
         editTaskButton.Enabled = addTaskButton.Enabled && SelectedTask != null;
         deleteTaskButton.Enabled = editTaskButton.Enabled;
     }
 
     private void EditTask(ActTask existing)
     {
-        if (settings.ActiveProfile.IsBuiltIn) return;
+        if (settings.ActiveProfile.ContentReadOnly) return;
         using (var dialog = new TaskDialog(existing))
         {
             if (dialog.ShowDialog(this) != DialogResult.OK) return;
@@ -694,7 +711,7 @@ internal sealed class EditorForm : Form
 
     private void DeleteTask()
     {
-        if (settings.ActiveProfile.IsBuiltIn) return;
+        if (settings.ActiveProfile.ContentReadOnly) return;
         ActTask task = SelectedTask;
         if (task == null) return;
         if (MessageBox.Show(this, UiText.Get("Удалить выбранную задачу?", "Delete the selected task?"), UiText.Get("Задачи по актам", "Campaign tasks"),
@@ -706,7 +723,7 @@ internal sealed class EditorForm : Form
     private void TasksEdited(ActTask selection)
     {
         RefreshTaskGrid(selection);
-        ScheduleSave();
+        ScheduleProfileSave();
         UpdateOverlay(true);
     }
 
@@ -734,6 +751,15 @@ internal sealed class EditorForm : Form
         ScheduleSave();
     }
 
+    private void ScheduleProfileSave()
+    {
+#if EDIT_DEFAULT_PROFILE
+        OverlayProfile profile = settings.ActiveProfile;
+        if (profile.IsBuiltIn && !profile.ContentReadOnly) defaultProfileDirty = true;
+#endif
+        ScheduleSave();
+    }
+
     private void ScheduleSave()
     {
         dirty = true;
@@ -749,6 +775,13 @@ internal sealed class EditorForm : Form
         if (!dirty && !force) return true;
         try
         {
+#if EDIT_DEFAULT_PROFILE
+            if (defaultProfileDirty)
+            {
+                BuiltInProfile.SaveDefault();
+                defaultProfileDirty = false;
+            }
+#endif
             settings.Save();
             dirty = false;
             saveStatus.Text = UiText.Get("Сохранено на этом компьютере", "Saved on this computer");
@@ -788,7 +821,8 @@ internal sealed class EditorForm : Form
         List<RouteNote> route = act.HasValue ? settings.Routes[act.Value - 1] : null;
         string emptyRoute = act.HasValue ? UiText.Get("Маршрут пока пуст. Добавьте заметки через «Правка».", "No route notes yet. Use Edit to add some.") :
             log.Available ? UiText.Get("Маршрут появится при входе в область кампании.", "Route notes appear when you enter a campaign area.") : connectLog;
-        overlay.SetRouteNotes(route, emptyRoute, routeEdited && act == selectedAct);
+        string currentArea = !previewAct.HasValue && act.HasValue ? log.AreaId : null;
+        overlay.SetRouteNotes(route, emptyRoute, currentArea, routeEdited && act == selectedAct);
     }
 }
 
@@ -953,6 +987,9 @@ internal sealed class HintOverlay : Form
     private string displayedEmptyText;
     private List<RouteNote> displayedRoute;
     private string displayedRouteEmptyText;
+    private string displayedArea;
+    private RouteNote lastRouteMatch;
+    private Control pendingRouteScroll;
 
     public HintOverlay(Action edit, Action<Rectangle> boundsChanged, Action<ActTask, bool> taskDone,
         Action<RouteNote, bool> routeNoteDone, Action switchMode,
@@ -964,7 +1001,7 @@ internal sealed class HintOverlay : Form
         transparencyPercent = transparency;
         wheelCallback = HandleWheel;
         SuspendLayout();
-        Text = "PoE Act Overlay";
+        Text = Program.AppName;
         BackColor = Theme.Background;
         ClientSize = new Size(380, 324);
         FormBorderStyle = FormBorderStyle.None;
@@ -998,6 +1035,7 @@ internal sealed class HintOverlay : Form
         footer.Anchor = AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
         body.SizeChanged += (sender, args) => ResizeCards(body);
         routeBody.SizeChanged += (sender, args) => ResizeCards(routeBody);
+        routeBody.VisibleChanged += (sender, args) => ScrollToCurrentRoute();
 
         AddResizeHandle(new Rectangle(3, 0, 11, 14), AnchorStyles.Top | AnchorStyles.Left, Cursors.SizeNWSE, -1, -1);
         AddResizeHandle(new Rectangle(14, 0, 352, 6), AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right, Cursors.SizeNS, 0, -1);
@@ -1221,24 +1259,67 @@ internal sealed class HintOverlay : Form
         UpdateProgress();
     }
 
-    public void SetRouteNotes(List<RouteNote> notes, string emptyText, bool refresh)
+    public void SetRouteNotes(List<RouteNote> notes, string emptyText, string currentArea, bool refresh)
     {
         bool empty = notes == null || notes.Count == 0;
-        if (!refresh && notes == displayedRoute && (!empty || emptyText == displayedRouteEmptyText)) return;
+        bool sameRoute = notes == displayedRoute;
+        bool areaChanged = currentArea != displayedArea;
+        if (!refresh && sameRoute && !areaChanged && (!empty || emptyText == displayedRouteEmptyText)) return;
 
-        int scroll = notes == displayedRoute ? -routeBody.AutoScrollPosition.Y : 0;
+        int scroll = sameRoute ? -routeBody.AutoScrollPosition.Y : 0;
+        bool follow = !sameRoute || areaChanged || pendingRouteScroll != null;
+        if (!sameRoute) lastRouteMatch = null;
+        int currentIndex = empty || currentArea == null ? -1 : FindRouteMatch(notes, currentArea);
+        if (currentIndex >= 0) lastRouteMatch = notes[currentIndex];
+        int endOfVisit = currentIndex;
+        if (currentIndex >= 0)
+            while (endOfVisit + 1 < notes.Count && notes[endOfVisit + 1].AreaId == currentArea) endOfVisit++;
         displayedRoute = notes;
         displayedRouteEmptyText = emptyText;
+        displayedArea = currentArea;
+        pendingRouteScroll = null;
         routeCheckboxes.Clear();
         RebuildCards(routeBody, scroll, empty ? emptyText : null, width =>
         {
-            foreach (RouteNote note in notes)
+            for (int i = 0; i < notes.Count; i++)
             {
+                RouteNote note = notes[i];
                 string title = String.IsNullOrEmpty(note.AreaId) ? null : CampaignAreas.NameOf(note.AreaId);
-                routeCheckboxes.Add(note, AddCard(routeBody, width, title, note.Text, note.Done, done => routeNoteDone(note, done)));
+                if (i == currentIndex) title = UiText.Get("Вы здесь", "You are here") + " · " + title;
+                bool currentVisit = i >= currentIndex && i <= endOfVisit;
+                CheckBox check = AddCard(routeBody, width, title, note.Text, note.Done, done => routeNoteDone(note, done), currentVisit);
+                routeCheckboxes.Add(note, check);
+                if (follow && i == currentIndex) pendingRouteScroll = check.Parent;
             }
         });
+        ScrollToCurrentRoute();
         UpdateProgress();
+    }
+
+    private int FindRouteMatch(List<RouteNote> notes, string area)
+    {
+        // A route can return to the same area later. Use the visit closest to the last match.
+        int anchor = notes.IndexOf(lastRouteMatch);
+        int best = -1;
+        int distance = Int32.MaxValue;
+        for (int i = 0; i < notes.Count; i++)
+        {
+            if (notes[i].AreaId != area) continue;
+            int candidateDistance = Math.Abs(i - anchor);
+            if (candidateDistance > distance || (candidateDistance == distance && i < anchor)) continue;
+            best = i;
+            distance = candidateDistance;
+        }
+        while (best > 0 && notes[best - 1].AreaId == area) best--;
+        return best;
+    }
+
+    private void ScrollToCurrentRoute()
+    {
+        if (pendingRouteScroll == null || !routeBody.Visible) return;
+        routeBody.PerformLayout();
+        routeBody.AutoScrollPosition = new Point(0, pendingRouteScroll.Top - routeBody.AutoScrollPosition.Y);
+        pendingRouteScroll = null;
     }
 
     private void RebuildCards(FlowLayoutPanel list, int scroll, string emptyText, Action<int> addCards)
@@ -1272,17 +1353,20 @@ internal sealed class HintOverlay : Form
         list.AutoScrollPosition = new Point(0, scroll);
     }
 
-    private CheckBox AddCard(FlowLayoutPanel list, int width, string title, string text, bool done, Action<bool> setDone)
+    private CheckBox AddCard(FlowLayoutPanel list, int width, string title, string text, bool done, Action<bool> setDone,
+        bool currentVisit = false)
     {
         var card = Theme.Card();
+        if (currentVisit) card.BackColor = Theme.Selected;
         card.Width = width;
         card.Margin = new Padding(0, 0, 0, Pixels(7));
         bool hasTitle = !String.IsNullOrWhiteSpace(title);
         bool hasText = !String.IsNullOrWhiteSpace(text);
-        Label header = hasTitle && hasText ? AddCardText(card, title, 10, Theme.Text, true) : null;
+        Color titleColor = currentVisit ? Theme.Accent : Theme.Text;
+        Label header = hasTitle && hasText ? AddCardText(card, title, 10, titleColor, true) : null;
         string caption = hasText ? text : title ?? "";
-        var content = AddCardText(card, caption, 10, Theme.Text, hasTitle && !hasText);
-        content.ResetForeColor();
+        var content = AddCardText(card, caption, 10, hasText ? Theme.Text : titleColor, hasTitle && !hasText);
+        if (!currentVisit || hasText) content.ResetForeColor();
         var check = new OverlayCheckBox { Checked = done, AccessibleName = caption, TabStop = false, Enabled = !profileReadOnly };
         if (!profileReadOnly)
         {

@@ -160,7 +160,12 @@
         {
           "AreaId": "1_2_5_1",
           "Done": false,
-          "Text": "испытание восхождения - релог в город"
+          "Text": "испытание восхождения - идти на 2 уровень"
+        },
+        {
+          "AreaId": "1_2_5_2",
+          "Done": false,
+          "Text": "забрать золотую руку, отдать йене"
         },
         {
           "AreaId": "1_2_3",
@@ -957,7 +962,12 @@
         {
           "AreaId": "1_2_5_1",
           "Done": false,
-          "Text": "Complete the Trial of Ascendancy, then relog to town."
+          "Text": "Complete the Trial of Ascendancy, then head to The Crypt Level 2."
+        },
+        {
+          "AreaId": "1_2_5_2",
+          "Done": false,
+          "Text": "Take the Golden Hand, then relog to town and give it to Yeena."
         },
         {
           "AreaId": "1_2_3",
