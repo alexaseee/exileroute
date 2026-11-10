@@ -1,0 +1,15 @@
+*.exe
+*.log
+*.tmp
+*.zip
+.env
+.env.*
+/dist/
+/bin/
+/obj/
+/.vs/
+/design-concepts/
+/PROJECT_STATUS.md
+Client.txt
+settings.json
+production_Config.ini

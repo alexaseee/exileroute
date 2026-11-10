@@ -1,0 +1,1596 @@
+{
+  "Russian": {
+    "Name": "Основной",
+    "Tasks": [
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      []
+    ],
+    "Routes": [
+      [
+        {
+          "AreaId": "1_1_1",
+          "Done": false,
+          "Text": ""
+        },
+        {
+          "AreaId": "1_1_town",
+          "Done": false,
+          "Text": "покупаем че надо и идём на побережье"
+        },
+        {
+          "AreaId": "1_1_2",
+          "Done": false,
+          "Text": "бежим до портала, потом в локу илистые низины"
+        },
+        {
+          "AreaId": "1_1_3",
+          "Done": false,
+          "Text": "собираем 3 ракушки, бежим в локу \"сырой проход\""
+        },
+        {
+          "AreaId": "1_1_4_1",
+          "Done": false,
+          "Text": "активируем вэйпоинт, через него тп на побережье - идём на прибрежный остров"
+        },
+        {
+          "AreaId": "1_1_2a",
+          "Done": false,
+          "Text": "убиваем босса - забираем аптечку. релог в город."
+        },
+        {
+          "AreaId": "1_1_4_1",
+          "Done": false,
+          "Text": "идём до моста, открываем портал, бежим через мост до локи - утёс"
+        },
+        {
+          "AreaId": "1_1_5",
+          "Done": false,
+          "Text": "бежим до след локи - склон"
+        },
+        {
+          "AreaId": "1_1_6",
+          "Done": false,
+          "Text": "бежим до след локи - тюремные подземелья.\r\n(когда бежим - ориентируемся, что мы должны подниматься типа в гору)"
+        },
+        {
+          "AreaId": "1_1_7_1",
+          "Done": false,
+          "Text": "активируем вэйпоинт, через него в город, из города в ранее открытый портал"
+        },
+        {
+          "AreaId": "1_1_4_1",
+          "Done": false,
+          "Text": "идём в локу залитый провал (она до перехода через мост)"
+        },
+        {
+          "AreaId": "1_1_4_0",
+          "Done": false,
+          "Text": "убиваем босса обитатель глубин. релог в город"
+        },
+        {
+          "AreaId": "1_1_7_1",
+          "Done": false,
+          "Text": "проходим испытание восхождения, идём в след локу - тюремные помещения"
+        },
+        {
+          "AreaId": "1_1_7_2",
+          "Done": false,
+          "Text": "убиваем босса, идём в след локу - врата заключенных"
+        },
+        {
+          "AreaId": "1_1_8",
+          "Done": false,
+          "Text": "активируем вэйпоинт, тп в город, в локации бежим не по дорожке - идём в локу кладбище кораблей."
+        },
+        {
+          "AreaId": "1_1_9",
+          "Done": false,
+          "Text": "активируем вэйпоинт, идём в локу грот погибших кораблей"
+        },
+        {
+          "AreaId": "1_1_9a",
+          "Done": false,
+          "Text": "забираем квестовый предмет в конце локи - идём в проход рядом"
+        },
+        {
+          "AreaId": "1_1_9",
+          "Done": false,
+          "Text": "идём в след локу пещеры гнева, активируем вэйпоинт, через него возвращаемся на кладбище, ищем капитана фейргрейвса, убиваем. тп в город, затем в пещеры"
+        },
+        {
+          "AreaId": "1_1_11_1",
+          "Done": false,
+          "Text": "идйм в след локу"
+        },
+        {
+          "AreaId": "1_1_11_2",
+          "Done": false,
+          "Text": "в конце локи - мервейл - убиваем, идём во второй акт"
+        }
+      ],
+      [
+        {
+          "AreaId": "1_2_1",
+          "Done": false,
+          "Text": "бежим в локу города"
+        },
+        {
+          "AreaId": "1_2_town",
+          "Done": false,
+          "Text": "в городе идём направо в локу старые поля"
+        },
+        {
+          "AreaId": "1_2_2",
+          "Done": false,
+          "Text": "(есть лока берлога, там дают второй флакон скорости)\r\nпо дороге бежим в след локу - перекресток"
+        },
+        {
+          "AreaId": "1_2_3",
+          "Done": false,
+          "Text": "бежим по дороге до вэйпоинта. от портала бежим по дороге влево в след локу - обитель грехов"
+        },
+        {
+          "AreaId": "1_2_6_1",
+          "Done": false,
+          "Text": "в центре области вэйпоинт. дойдя до него - бежим в его второну до следующего уровня локи."
+        },
+        {
+          "AreaId": "1_2_6_2",
+          "Done": false,
+          "Text": "второе испытание восхождения.\r\n убить босса - релог в город - тп на перекреток."
+        },
+        {
+          "AreaId": "1_2_3",
+          "Done": false,
+          "Text": "идём вправо в локу - руины оскверненной святыни"
+        },
+        {
+          "AreaId": "1_2_15",
+          "Done": false,
+          "Text": "бежим по дороге до склепа"
+        },
+        {
+          "AreaId": "1_2_5_1",
+          "Done": false,
+          "Text": "испытание восхождения - релог в город"
+        },
+        {
+          "AreaId": "1_2_3",
+          "Done": false,
+          "Text": "идём вверх до разрушенного моста"
+        },
+        {
+          "AreaId": "1_2_4",
+          "Done": false,
+          "Text": "идём до босса бандита. релог - из города идём налево в пойму реки."
+        },
+        {
+          "AreaId": "1_2_7",
+          "Done": false,
+          "Text": "бежим по дороге до вэйпоинта. сходим с дороги в этом месте, идём в топь."
+        },
+        {
+          "AreaId": "1_2_12",
+          "Done": false,
+          "Text": "тут ищем второго бандита, потом ищем вэйпоинт, через него тп в пойму реки"
+        },
+        {
+          "AreaId": "1_2_7",
+          "Done": false,
+          "Text": "бежим дальше по дороге до западного леса"
+        },
+        {
+          "AreaId": "1_2_9",
+          "Done": false,
+          "Text": "по дороге доходим до вэйпоинта. если портал справа от дороги, то алира справой стороны локи, а ткачиха слева.\r\nидём к алире, потом по дороге добегаем до конца, убиваем босса, тыкаем на знак на стене. \r\nидём к ткачихе"
+        },
+        {
+          "AreaId": "1_2_10",
+          "Done": false,
+          "Text": "убиваем ткачиху, релог в город - тп в первый акт - тп в топь, заходим в след локу - руины ваал"
+        },
+        {
+          "AreaId": "1_2_11",
+          "Done": false,
+          "Text": "бежим до след локи - северный лес"
+        },
+        {
+          "AreaId": "1_2_8",
+          "Done": false,
+          "Text": "пробегаем до след локи - пещеры"
+        },
+        {
+          "AreaId": "1_2_14_2",
+          "Done": false,
+          "Text": "бежим древней пирамиды"
+        },
+        {
+          "AreaId": "1_2_14_3",
+          "Done": false,
+          "Text": "выходы из областей в противоположной стороне от старта. убиваем босса. 3 акт"
+        }
+      ],
+      [
+        {
+          "AreaId": "1_3_1",
+          "Done": false,
+          "Text": "спасаем клариссу, идём в город"
+        },
+        {
+          "AreaId": "1_3_2",
+          "Done": false,
+          "Text": "через лагерь идем в трущобы, ищем вход в крематорий"
+        },
+        {
+          "AreaId": "1_3_3_1",
+          "Done": false,
+          "Text": "испытание восхождения.\r\nбьём веру. релог - к клариссе.\r\nидём в канализации через трущобы"
+        },
+        {
+          "AreaId": "1_3_10_1",
+          "Done": false,
+          "Text": "собираем бюсты, идём в локу - рынок"
+        },
+        {
+          "AreaId": "1_3_5",
+          "Done": false,
+          "Text": "ищем проход с арками, за ним вэйпоинт, и недалеко вход в катакомбы"
+        },
+        {
+          "AreaId": "1_3_6",
+          "Done": false,
+          "Text": "испытание восхождения. релог. тп на рынок"
+        },
+        {
+          "AreaId": "1_3_5",
+          "Done": false,
+          "Text": "идем в локу - передовая"
+        },
+        {
+          "AreaId": "1_3_7",
+          "Done": false,
+          "Text": "в левой части области находим вэйпоинт, слева от него квестовый предмет. идём вверх до локи - Доки"
+        },
+        {
+          "AreaId": "1_3_9",
+          "Done": false,
+          "Text": "можно пофармить лвл.\r\nищем предмет - волшебная соль.\r\nтп на передовую"
+        },
+        {
+          "AreaId": "1_3_7",
+          "Done": false,
+          "Text": "идём вправо вверх до храма солярис"
+        },
+        {
+          "AreaId": "1_3_8_1",
+          "Done": false,
+          "Text": "пробегаем, идём к след уровню"
+        },
+        {
+          "AreaId": "1_3_8_2",
+          "Done": false,
+          "Text": "пробегаем до нпс, идём в канализацию, от туда - в лагерь эбенового легиона"
+        },
+        {
+          "AreaId": "1_3_13",
+          "Done": false,
+          "Text": "бежим влево вверх до храма лунарис.\r\nгравиция убиваем если нужны камни 28-го уровня"
+        },
+        {
+          "AreaId": "1_3_14_1",
+          "Done": false,
+          "Text": "бежим до след уровня\r\n"
+        },
+        {
+          "AreaId": "1_3_14_2",
+          "Done": false,
+          "Text": "ориентир - бежим по узким лестницам поднимаясь по ним. бьём веру - релог - тп в лагерь эбенового легиона"
+        },
+        {
+          "AreaId": "1_3_13",
+          "Done": false,
+          "Text": "идём вправо наверх в имперские сады"
+        },
+        {
+          "AreaId": "1_3_15",
+          "Done": false,
+          "Text": "испытание восхождения.\r\nбиблиотека, если нужны камни.\r\nидём в перст господень"
+        },
+        {
+          "AreaId": "1_3_18_1",
+          "Done": false,
+          "Text": "тут несколько уровней, переходы в одном из 4 углов области."
+        },
+        {
+          "AreaId": "1_3_18_2",
+          "Done": false,
+          "Text": "убиваем босса"
+        }
+      ],
+      [
+        {
+          "AreaId": "1_4_1",
+          "Done": false,
+          "Text": "идём до города"
+        },
+        {
+          "AreaId": "1_4_town",
+          "Done": false,
+          "Text": "можно пройти первую лабу.\r\nидём в высохшее озеро.\r\n"
+        },
+        {
+          "AreaId": "1_4_2",
+          "Done": false,
+          "Text": "убиваем босса. релог."
+        },
+        {
+          "AreaId": "1_4_3_1",
+          "Done": false,
+          "Text": "проходим до конца"
+        },
+        {
+          "AreaId": "1_4_3_2",
+          "Done": false,
+          "Text": "ищем дух дэшрет, убиваем.\r\nидём до след локи - кристальная жила"
+        },
+        {
+          "AreaId": "1_4_3_3",
+          "Done": false,
+          "Text": "идём до вэйпоинта, там порталы к след локам"
+        },
+        {
+          "AreaId": "1_4_5_1",
+          "Done": false,
+          "Text": "проходим две локи подря убив босса"
+        },
+        {
+          "AreaId": "1_4_4_1",
+          "Done": false,
+          "Text": "проходим две локи подря убив босса"
+        },
+        {
+          "AreaId": "1_4_3_3",
+          "Done": false,
+          "Text": "говорим с нпс, идём в брюхо зверя"
+        },
+        {
+          "AreaId": "1_4_6_1",
+          "Done": false,
+          "Text": "проходим"
+        },
+        {
+          "AreaId": "1_4_6_2",
+          "Done": false,
+          "Text": "убиваем веру, идём в жатву"
+        },
+        {
+          "AreaId": "1_4_6_3",
+          "Done": false,
+          "Text": "идём до вэйпоинта, убиваем 3 минибоссов, возвращаемся к вэйпоинту, идём к малахаю, убиваем.\r\nрелог - идём в локу - подъем"
+        },
+        {
+          "AreaId": "1_4_7",
+          "Done": false,
+          "Text": "идём до локи - узилище"
+        }
+      ],
+      [
+        {
+          "AreaId": "1_5_1",
+          "Done": false,
+          "Text": "идём по локе по часовой стрелке до босса, поднимаемся по лестнице в след локу - башня надзирателя."
+        },
+        {
+          "AreaId": "1_5_2",
+          "Done": false,
+          "Text": "из города выходим в изолятор.\r\nидём по часовой стрелке, игнорируя центр. ищем квестовый предмет. потом бежим дальше по краю локи до босса. идём в след локу - площадь ориата"
+        },
+        {
+          "AreaId": "1_5_3",
+          "Done": false,
+          "Text": "идем вправо-вверх, после моста - вправо вниз до след локи - суды жрецов"
+        },
+        {
+          "AreaId": "1_5_4",
+          "Done": false,
+          "Text": "идём по часовой стрелке до след локи - обитель невинности"
+        },
+        {
+          "AreaId": "1_5_5",
+          "Done": false,
+          "Text": "идём против часовой стрелки до комнаты босса. \r\nвыходим в область подожжённые суды"
+        },
+        {
+          "AreaId": "1_5_4b",
+          "Done": false,
+          "Text": "бежим против часовой до след локи - разрушенная площадь"
+        },
+        {
+          "AreaId": "1_5_3b",
+          "Done": false,
+          "Text": "доходим до портала, идём в след локу - костницу"
+        },
+        {
+          "AreaId": "1_5_6",
+          "Done": false,
+          "Text": "квестовый предмет"
+        },
+        {
+          "AreaId": "1_5_3b",
+          "Done": false,
+          "Text": "бежим вниз до открытой местности, ставим портал, бежим вниз-вправо, до локации реликварий.\r\n"
+        },
+        {
+          "AreaId": "1_5_7",
+          "Done": false,
+          "Text": "собираем квестовые предметы, возвращаемся к вэйпоинту в начале локи, тп в город.\r\nидём в ранее открытый портал. \r\nтам идём налево в след локу - крыша собора"
+        },
+        {
+          "AreaId": "1_5_8",
+          "Done": false,
+          "Text": "бежим до китавы, убиваем"
+        }
+      ],
+      [
+        {
+          "AreaId": "2_6_1",
+          "Done": false,
+          "Text": "выполняем квест, убивая всех мобов, для открытия лилии"
+        },
+        {
+          "AreaId": "2_6_2",
+          "Done": false,
+          "Text": "бежим до илистых низин"
+        },
+        {
+          "AreaId": "2_6_4",
+          "Done": false,
+          "Text": "в правой чати локации - босс.\r\nслева проход в след локу - крепость каруи"
+        },
+        {
+          "AreaId": "2_6_5",
+          "Done": false,
+          "Text": "идём к зоне с боссом, убиваем.\r\nидём в след локу - хребет"
+        },
+        {
+          "AreaId": "2_6_6",
+          "Done": false,
+          "Text": "идем в след локу - тюремное подземелье"
+        },
+        {
+          "AreaId": "2_6_7_1",
+          "Done": false,
+          "Text": "испытание восхождения.\r\nидём в след локу - башня шаврон."
+        },
+        {
+          "AreaId": "2_6_7_2",
+          "Done": false,
+          "Text": "проходим до босса, убиваем.\r\n идём в след локу - врата заключенных"
+        },
+        {
+          "AreaId": "2_6_8",
+          "Done": false,
+          "Text": "ищем проход между гор, находим зону с боссом, убиваем.\r\nвовращаемся на дорогу, бежим до след локи - западный лес"
+        },
+        {
+          "AreaId": "2_6_9",
+          "Done": false,
+          "Text": "пробегаем до след локи - пойма реки"
+        },
+        {
+          "AreaId": "2_6_10",
+          "Done": false,
+          "Text": "идем по дороге до вэйпоинта. сходим с дороги в локу - топь"
+        },
+        {
+          "AreaId": "2_6_11",
+          "Done": false,
+          "Text": "проходим до босса. релог - тп в пойму реки. \r\nидём до след локи - южный лес"
+        },
+        {
+          "AreaId": "2_6_12",
+          "Done": false,
+          "Text": "идём вправо до пещеры злобы"
+        },
+        {
+          "AreaId": "2_6_13",
+          "Done": false,
+          "Text": "берем квестовый предмет.\r\nидём до след локи - маяк"
+        },
+        {
+          "AreaId": "2_6_14",
+          "Done": false,
+          "Text": "держимся правой стороны, бежим вдоль берега до построек, активируем маяк.\r\nидём в след локу - риф морского царя"
+        },
+        {
+          "AreaId": "2_6_15",
+          "Done": false,
+          "Text": "идём до босса, убиваем."
+        }
+      ],
+      [
+        {
+          "AreaId": "2_7_1",
+          "Done": false,
+          "Text": "в одном из разрушенных зданий - медальон, за него дают флаконы на выбор.\r\nидём до след локи - перекресток."
+        },
+        {
+          "AreaId": "2_7_2",
+          "Done": false,
+          "Text": "идём до портала, от него вправо до след локи - руины оскверненной святыни"
+        },
+        {
+          "AreaId": "2_7_3",
+          "Done": false,
+          "Text": "идём по дороге до склепа"
+        },
+        {
+          "AreaId": "2_7_4",
+          "Done": false,
+          "Text": "на первом уровне - испытание восхождения.\r\nна втором - квестовый предмет.\r\nрелог - тп перекресток - налево в след локу - обитель грехов"
+        },
+        {
+          "AreaId": "2_7_5_1",
+          "Done": false,
+          "Text": "идём к центру локи, берём вэйпоинт, запускаем машину картоходца."
+        },
+        {
+          "AreaId": "2_7_5_map",
+          "Done": false,
+          "Text": "убиваем малигаро"
+        },
+        {
+          "AreaId": "2_7_5_1",
+          "Done": false,
+          "Text": "говорим с нпс, идём на второй уровень обители"
+        },
+        {
+          "AreaId": "2_7_5_2",
+          "Done": false,
+          "Text": "испытание восхождения.\r\nидём в след локу - берлога"
+        },
+        {
+          "AreaId": "2_7_6",
+          "Done": false,
+          "Text": "идём в след локу - пепельные поля"
+        },
+        {
+          "AreaId": "2_7_7",
+          "Done": false,
+          "Text": "идём вниз влево, до босса.\r\nидём в след локу - северный лес"
+        },
+        {
+          "AreaId": "2_7_8",
+          "Done": false,
+          "Text": "идём в след локу - чащоба"
+        },
+        {
+          "AreaId": "2_7_9",
+          "Done": false,
+          "Text": "собираем светлячков. заходим в пещеру с боссом, убиваем."
+        },
+        {
+          "AreaId": "2_7_8",
+          "Done": false,
+          "Text": "идём в след локу - перешеек"
+        },
+        {
+          "AreaId": "2_7_10",
+          "Done": false,
+          "Text": "идём в след локу - город ваал.\r\n(в конце локи есть квестовый предмет)"
+        },
+        {
+          "AreaId": "2_7_11",
+          "Done": false,
+          "Text": "идём в след локу - храм разложения"
+        },
+        {
+          "AreaId": "2_7_12_1",
+          "Done": false,
+          "Text": "пробегаем до след уровня"
+        },
+        {
+          "AreaId": "2_7_12_2",
+          "Done": false,
+          "Text": "убиваем босса"
+        }
+      ],
+      [
+        {
+          "AreaId": "2_8_1",
+          "Done": false,
+          "Text": "идём до лагеря сарна"
+        },
+        {
+          "AreaId": "2_8_town",
+          "Done": false,
+          "Text": "можно пройти 2 лабиринт"
+        },
+        {
+          "AreaId": "2_8_2_1",
+          "Done": false,
+          "Text": "идем в след локу - сточная яма доэдре"
+        },
+        {
+          "AreaId": "2_8_2_2",
+          "Done": false,
+          "Text": "убиваем босса, идём в след локу - пристань"
+        },
+        {
+          "AreaId": "2_8_8",
+          "Done": false,
+          "Text": "идём вниз вправо, проходим узкий мостик, там квестовый предмет. \r\nпродолжаем движение вправо по нижней части локи.\r\nнаходим переход к области с клариссой.\r\nидём в основной области вправо-вверх до след локи - зерновые ворота"
+        },
+        {
+          "AreaId": "2_8_9",
+          "Done": false,
+          "Text": "убить легионеров, они по пути к выходу.\r\nориентир: идти туда где трупы около зданий.\r\nидём в след локу - имперские поля"
+        },
+        {
+          "AreaId": "2_8_10",
+          "Done": false,
+          "Text": "идём до след локи - храм солярис"
+        },
+        {
+          "AreaId": "2_8_12_1",
+          "Done": false,
+          "Text": "ищем вэйпоинт, потом идем на след уровень"
+        },
+        {
+          "AreaId": "2_8_12_2",
+          "Done": false,
+          "Text": "убиваем босса.\r\nрелог в город. тп на первый уровень храма солярис"
+        },
+        {
+          "AreaId": "2_8_12_1",
+          "Done": false,
+          "Text": "идём в след локу - площадь солярис"
+        },
+        {
+          "AreaId": "2_8_11",
+          "Done": false,
+          "Text": "идём влево-вниз до вэйпоинта.\r\nдальше идём в след локу - портовый мост"
+        },
+        {
+          "AreaId": "2_8_13",
+          "Done": false,
+          "Text": "пропускаем комнату, пробегаем локу до конца.\r\nидём в след локу - площадь лунарис"
+        },
+        {
+          "AreaId": "2_8_6",
+          "Done": false,
+          "Text": "активируем вэйпоинт.\r\nидём в след локу - храм лунарис"
+        },
+        {
+          "AreaId": "2_8_7_1_",
+          "Done": false,
+          "Text": "идём на след уровень храма"
+        },
+        {
+          "AreaId": "2_8_7_2",
+          "Done": false,
+          "Text": "убиваем босса, берем квестовый предмет.\r\nтп на площадь лунарис, оттуда идём в след локу - купальни"
+        },
+        {
+          "AreaId": "2_8_5",
+          "Done": false,
+          "Text": "испытание восхождение.\r\nидём в след локу - висячие сады"
+        },
+        {
+          "AreaId": "2_8_4",
+          "Done": false,
+          "Text": "убиваем босса. тп в город.\r\nтп в портовый мост к комнате боссов."
+        },
+        {
+          "AreaId": "2_8_13",
+          "Done": false,
+          "Text": "убиваем боссов"
+        }
+      ],
+      [
+        {
+          "AreaId": "2_9_1",
+          "Done": false,
+          "Text": "можно пофармить.\r\nбежим до города."
+        },
+        {
+          "AreaId": "2_9_2",
+          "Done": false,
+          "Text": "идём в след локу - пустыня вастири"
+        },
+        {
+          "AreaId": "2_9_3",
+          "Done": false,
+          "Text": "ищем портал.\r\nищем клинок бури.\r\nтп в город к нпс.\r\nидём в след локу - оазис"
+        },
+        {
+          "AreaId": "2_9_4",
+          "Done": false,
+          "Text": "убиваем босса.\r\nтп в пустыню.\r\nидём в след локу - предгорье"
+        },
+        {
+          "AreaId": "2_9_5",
+          "Done": false,
+          "Text": "вверх до вэйпоинта.\r\nидём в след локу- кипящее озеро"
+        },
+        {
+          "AreaId": "2_9_6",
+          "Done": false,
+          "Text": "сверху босс.\r\nтп в предгорье.\r\nидём в след локу - тоннель"
+        },
+        {
+          "AreaId": "2_9_7",
+          "Done": false,
+          "Text": "ипытание восхождения.\r\nидём в след локу- каменоломня"
+        },
+        {
+          "AreaId": "2_9_8",
+          "Done": false,
+          "Text": "в центре нпс.\r\nидём в локу фабрика, убиваем босса.\r\nидём в другую область - убиваем босса.\r\nидём к нпс.\r\nидём в след локу - брюхо зверя."
+        },
+        {
+          "AreaId": "2_9_10_1",
+          "Done": false,
+          "Text": "идём до след локи- гниющее нутро"
+        },
+        {
+          "AreaId": "2_9_10_2",
+          "Done": false,
+          "Text": "три портала, пройти их.\r\nубиваем босса"
+        }
+      ],
+      [
+        {
+          "AreaId": "2_10_1",
+          "Done": false,
+          "Text": "идём вверх влево в соседнюю зону, убиваем культистов, говорим с нпс.\r\nидём в след локу - разорённая площадь"
+        },
+        {
+          "AreaId": "2_10_2",
+          "Done": false,
+          "Text": "на старте локации открыть портал.\r\nидём вправо вверх через мост до вэйпоинта, тп в город, заходим в открытый портал.\r\nидём вниз в след локу - изолятор."
+        },
+        {
+          "AreaId": "2_10_7",
+          "Done": false,
+          "Text": "проходим, убиваем босса.\r\nтп в разорённую площадь"
+        },
+        {
+          "AreaId": "2_10_2",
+          "Done": false,
+          "Text": "идём вправо-вниз в локу - подожённые суды"
+        },
+        {
+          "AreaId": "2_10_3",
+          "Done": false,
+          "Text": "идём по часовой, до след локи - оскверненная обитель"
+        },
+        {
+          "AreaId": "2_10_4",
+          "Done": false,
+          "Text": "идем против часовой. убиваем босса. квестовый предмет. тп в город к нпс.\r\nтп в разорённую площадь, сразу вход в костницу"
+        },
+        {
+          "AreaId": "2_10_9",
+          "Done": false,
+          "Text": "испытание восхождения.\r\nтп в город к нпс.\r\nтп в разорённую площадь. рядом спавнится нпс.\r\nидём в след локу - каналы"
+        },
+        {
+          "AreaId": "2_10_5",
+          "Done": false,
+          "Text": "идём в след локу - кормушка"
+        },
+        {
+          "AreaId": "2_10_6",
+          "Done": false,
+          "Text": "проходим, убиваем китаву.\r\nв ориате прокликиваем нпс, забираем награды.\r\nможно пройти 3 лабу.\r\nпишем /passives. должно быть 23-24 пассивки. если не убили 1 бандита и если убили всех соответственно."
+        }
+      ]
+    ]
+  },
+  "English": {
+    "Name": "Default",
+    "Tasks": [
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      [],
+      []
+    ],
+    "Routes": [
+      [
+        {
+          "AreaId": "1_1_1",
+          "Done": false,
+          "Text": ""
+        },
+        {
+          "AreaId": "1_1_town",
+          "Done": false,
+          "Text": "Buy what you need, then head to The Coast."
+        },
+        {
+          "AreaId": "1_1_2",
+          "Done": false,
+          "Text": "Run to the waypoint, then head into The Mud Flats."
+        },
+        {
+          "AreaId": "1_1_3",
+          "Done": false,
+          "Text": "Collect the three glyphs from the Rhoa Nests, then run to The Submerged Passage."
+        },
+        {
+          "AreaId": "1_1_4_1",
+          "Done": false,
+          "Text": "Activate the waypoint. Use it to return to The Coast, then head to The Tidal Island."
+        },
+        {
+          "AreaId": "1_1_2a",
+          "Done": false,
+          "Text": "Kill Hailrake and pick up the Medicine Chest. Relog to town."
+        },
+        {
+          "AreaId": "1_1_4_1",
+          "Done": false,
+          "Text": "Head to the bridge and open a town portal. Cross the bridge and run to The Ledge."
+        },
+        {
+          "AreaId": "1_1_5",
+          "Done": false,
+          "Text": "Run through to the next area, The Climb."
+        },
+        {
+          "AreaId": "1_1_6",
+          "Done": false,
+          "Text": "Run to The Lower Prison.\r\nAs you go, look for the path that climbs uphill."
+        },
+        {
+          "AreaId": "1_1_7_1",
+          "Done": false,
+          "Text": "Activate the waypoint and use it to go to town. Take the town portal you opened earlier."
+        },
+        {
+          "AreaId": "1_1_4_1",
+          "Done": false,
+          "Text": "Enter The Flooded Depths. Its entrance is before the bridge."
+        },
+        {
+          "AreaId": "1_1_4_0",
+          "Done": false,
+          "Text": "Kill the Deep Dweller, then relog to town."
+        },
+        {
+          "AreaId": "1_1_7_1",
+          "Done": false,
+          "Text": "Complete the Trial of Ascendancy, then enter The Upper Prison."
+        },
+        {
+          "AreaId": "1_1_7_2",
+          "Done": false,
+          "Text": "Kill the boss, then enter Prisoner's Gate."
+        },
+        {
+          "AreaId": "1_1_8",
+          "Done": false,
+          "Text": "Activate the waypoint and use it to go to town. When you return, leave the road and head to The Ship Graveyard."
+        },
+        {
+          "AreaId": "1_1_9",
+          "Done": false,
+          "Text": "Activate the waypoint, then enter The Ship Graveyard Cave."
+        },
+        {
+          "AreaId": "1_1_9a",
+          "Done": false,
+          "Text": "Pick up the Allflame at the end of the cave and take the nearby exit."
+        },
+        {
+          "AreaId": "1_1_9",
+          "Done": false,
+          "Text": "Enter The Cavern of Wrath and activate its waypoint. Waypoint back to The Ship Graveyard, find Captain Fairgraves, and kill him. Waypoint to town, then return to The Cavern of Wrath."
+        },
+        {
+          "AreaId": "1_1_11_1",
+          "Done": false,
+          "Text": "Continue to the next area."
+        },
+        {
+          "AreaId": "1_1_11_2",
+          "Done": false,
+          "Text": "Kill Merveil at the end of the area, then head into Act 2."
+        }
+      ],
+      [
+        {
+          "AreaId": "1_2_1",
+          "Done": false,
+          "Text": "Run to The Forest Encampment."
+        },
+        {
+          "AreaId": "1_2_town",
+          "Done": false,
+          "Text": "Head right out of town into The Old Fields."
+        },
+        {
+          "AreaId": "1_2_2",
+          "Done": false,
+          "Text": "The Den is a side area here. Its quest can reward a second Quicksilver Flask.\r\nFollow the road to The Crossroads."
+        },
+        {
+          "AreaId": "1_2_3",
+          "Done": false,
+          "Text": "Follow the road to the waypoint. From there, take the road to the left into the Chamber of Sins."
+        },
+        {
+          "AreaId": "1_2_6_1",
+          "Done": false,
+          "Text": "Find the waypoint in the middle of the area. Keep going past it in the same direction to reach the next level."
+        },
+        {
+          "AreaId": "1_2_6_2",
+          "Done": false,
+          "Text": "Complete the second Trial of Ascendancy.\r\nKill the boss, relog to town, and take the waypoint to The Crossroads."
+        },
+        {
+          "AreaId": "1_2_3",
+          "Done": false,
+          "Text": "Go right into The Fellshrine Ruins."
+        },
+        {
+          "AreaId": "1_2_15",
+          "Done": false,
+          "Text": "Follow the road to The Crypt."
+        },
+        {
+          "AreaId": "1_2_5_1",
+          "Done": false,
+          "Text": "Complete the Trial of Ascendancy, then relog to town."
+        },
+        {
+          "AreaId": "1_2_3",
+          "Done": false,
+          "Text": "Head up to The Broken Bridge."
+        },
+        {
+          "AreaId": "1_2_4",
+          "Done": false,
+          "Text": "Find the bandit boss, Kraityn. Relog, then leave town to the left into The Riverways."
+        },
+        {
+          "AreaId": "1_2_7",
+          "Done": false,
+          "Text": "Follow the road to the waypoint. Leave the road there and head into The Wetlands."
+        },
+        {
+          "AreaId": "1_2_12",
+          "Done": false,
+          "Text": "Find the second bandit, Oak. Then find the waypoint and use it to return to The Riverways."
+        },
+        {
+          "AreaId": "1_2_7",
+          "Done": false,
+          "Text": "Continue along the road into The Western Forest."
+        },
+        {
+          "AreaId": "1_2_9",
+          "Done": false,
+          "Text": "Follow the road to the waypoint. If it is on the right side of the road, Alira is on the right side of the area and the Weaver is on the left.\r\nGo to Alira, then follow the road to the end, kill Captain Arteri, and interact with the Thaumetic Seal.\r\nHead to the Weaver."
+        },
+        {
+          "AreaId": "1_2_10",
+          "Done": false,
+          "Text": "Kill the Weaver and relog to town. Waypoint to Act 1, then to The Wetlands. Enter The Vaal Ruins."
+        },
+        {
+          "AreaId": "1_2_11",
+          "Done": false,
+          "Text": "Run through to The Northern Forest."
+        },
+        {
+          "AreaId": "1_2_8",
+          "Done": false,
+          "Text": "Run through to The Caverns."
+        },
+        {
+          "AreaId": "1_2_14_2",
+          "Done": false,
+          "Text": "Run through to The Ancient Pyramid."
+        },
+        {
+          "AreaId": "1_2_14_3",
+          "Done": false,
+          "Text": "On each floor, look for the exit on the opposite side from where you entered. Kill the boss, then head into Act 3."
+        }
+      ],
+      [
+        {
+          "AreaId": "1_3_1",
+          "Done": false,
+          "Text": "Rescue Clarissa, then head into town."
+        },
+        {
+          "AreaId": "1_3_2",
+          "Done": false,
+          "Text": "Go through The Sarn Encampment into The Slums and find the entrance to The Crematorium."
+        },
+        {
+          "AreaId": "1_3_3_1",
+          "Done": false,
+          "Text": "Complete the Trial of Ascendancy.\r\nDefeat Piety, then relog to town and speak to Clarissa.\r\nEnter The Sewers through The Slums."
+        },
+        {
+          "AreaId": "1_3_10_1",
+          "Done": false,
+          "Text": "Collect the busts, then enter The Marketplace."
+        },
+        {
+          "AreaId": "1_3_5",
+          "Done": false,
+          "Text": "Look for the passage with arches. The waypoint is just past it, and the entrance to The Catacombs is nearby."
+        },
+        {
+          "AreaId": "1_3_6",
+          "Done": false,
+          "Text": "Complete the Trial of Ascendancy, relog to town, and waypoint back to The Marketplace."
+        },
+        {
+          "AreaId": "1_3_5",
+          "Done": false,
+          "Text": "Head into The Battlefront."
+        },
+        {
+          "AreaId": "1_3_7",
+          "Done": false,
+          "Text": "Find the waypoint on the left side of the area. The Ribbon Spool is to its left. Head up to The Docks."
+        },
+        {
+          "AreaId": "1_3_9",
+          "Done": false,
+          "Text": "You can farm some XP here.\r\nFind the Thaumetic Sulphite.\r\nWaypoint back to The Battlefront."
+        },
+        {
+          "AreaId": "1_3_7",
+          "Done": false,
+          "Text": "Head up and right to the Solaris Temple."
+        },
+        {
+          "AreaId": "1_3_8_1",
+          "Done": false,
+          "Text": "Run through to the next level."
+        },
+        {
+          "AreaId": "1_3_8_2",
+          "Done": false,
+          "Text": "Reach the NPC, then go to The Sewers. From there, head into The Ebony Barracks."
+        },
+        {
+          "AreaId": "1_3_13",
+          "Done": false,
+          "Text": "Run up and left to the Lunaris Temple.\r\nKill General Gravicius if you need level 28 gems."
+        },
+        {
+          "AreaId": "1_3_14_1",
+          "Done": false,
+          "Text": "Run through to the next level."
+        },
+        {
+          "AreaId": "1_3_14_2",
+          "Done": false,
+          "Text": "Look for narrow stairways and climb them. Defeat Piety, relog to town, and waypoint back to The Ebony Barracks."
+        },
+        {
+          "AreaId": "1_3_13",
+          "Done": false,
+          "Text": "Head up and right into The Imperial Gardens."
+        },
+        {
+          "AreaId": "1_3_15",
+          "Done": false,
+          "Text": "Complete the Trial of Ascendancy.\r\nVisit The Library if you need gems.\r\nEnter The Sceptre of God."
+        },
+        {
+          "AreaId": "1_3_18_1",
+          "Done": false,
+          "Text": "There are several floors here. Look for the stairs in one of the four corners of each floor."
+        },
+        {
+          "AreaId": "1_3_18_2",
+          "Done": false,
+          "Text": "Kill the boss."
+        }
+      ],
+      [
+        {
+          "AreaId": "1_4_1",
+          "Done": false,
+          "Text": "Head into town."
+        },
+        {
+          "AreaId": "1_4_town",
+          "Done": false,
+          "Text": "You can run the first Labyrinth here.\r\nHead into The Dried Lake."
+        },
+        {
+          "AreaId": "1_4_2",
+          "Done": false,
+          "Text": "Kill the boss, then relog to town."
+        },
+        {
+          "AreaId": "1_4_3_1",
+          "Done": false,
+          "Text": "Go all the way through the area."
+        },
+        {
+          "AreaId": "1_4_3_2",
+          "Done": false,
+          "Text": "Find and free Deshret's Spirit.\r\nContinue to the next area, The Crystal Veins."
+        },
+        {
+          "AreaId": "1_4_3_3",
+          "Done": false,
+          "Text": "Reach the waypoint. The portals to the next areas are nearby."
+        },
+        {
+          "AreaId": "1_4_5_1",
+          "Done": false,
+          "Text": "Go through both areas in succession and kill the boss."
+        },
+        {
+          "AreaId": "1_4_4_1",
+          "Done": false,
+          "Text": "Go through both areas in succession and kill the boss."
+        },
+        {
+          "AreaId": "1_4_3_3",
+          "Done": false,
+          "Text": "Speak to the NPC, then enter The Belly of the Beast."
+        },
+        {
+          "AreaId": "1_4_6_1",
+          "Done": false,
+          "Text": "Run through the area."
+        },
+        {
+          "AreaId": "1_4_6_2",
+          "Done": false,
+          "Text": "Defeat Piety, then head into The Harvest."
+        },
+        {
+          "AreaId": "1_4_6_3",
+          "Done": false,
+          "Text": "Reach the waypoint, kill the three minibosses, then return to the waypoint. Go to Malachai and kill him.\r\nRelog to town, then head into The Ascent."
+        },
+        {
+          "AreaId": "1_4_7",
+          "Done": false,
+          "Text": "Continue to The Slave Pens."
+        }
+      ],
+      [
+        {
+          "AreaId": "1_5_1",
+          "Done": false,
+          "Text": "Go clockwise around the area until you reach the boss, then take the stairs up into Overseer's Tower."
+        },
+        {
+          "AreaId": "1_5_2",
+          "Done": false,
+          "Text": "Leave town into The Control Blocks.\r\nFollow the outer edge clockwise, skipping the centre. Find the quest item, then keep following the edge to the boss. Enter Oriath Square."
+        },
+        {
+          "AreaId": "1_5_3",
+          "Done": false,
+          "Text": "Go up and right. After the bridge, head down and right into The Templar Courts."
+        },
+        {
+          "AreaId": "1_5_4",
+          "Done": false,
+          "Text": "Go clockwise until you reach The Chamber of Innocence."
+        },
+        {
+          "AreaId": "1_5_5",
+          "Done": false,
+          "Text": "Go counterclockwise to the boss room.\r\nExit into The Torched Courts."
+        },
+        {
+          "AreaId": "1_5_4b",
+          "Done": false,
+          "Text": "Run counterclockwise into The Ruined Square."
+        },
+        {
+          "AreaId": "1_5_3b",
+          "Done": false,
+          "Text": "Reach the waypoint, then head into The Ossuary."
+        },
+        {
+          "AreaId": "1_5_6",
+          "Done": false,
+          "Text": "Pick up the Sign of Purity."
+        },
+        {
+          "AreaId": "1_5_3b",
+          "Done": false,
+          "Text": "Run down until the area opens up and place a town portal. Head down and right into The Reliquary."
+        },
+        {
+          "AreaId": "1_5_7",
+          "Done": false,
+          "Text": "Collect the quest items. Return to the waypoint in The Ruined Square and use it to go to town.\r\nTake the portal you opened earlier.\r\nFrom there, head left into The Cathedral Rooftop."
+        },
+        {
+          "AreaId": "1_5_8",
+          "Done": false,
+          "Text": "Run to Kitava and defeat him."
+        }
+      ],
+      [
+        {
+          "AreaId": "2_6_1",
+          "Done": false,
+          "Text": "Clear every monster in the area to unlock Lilly Roth as a gem vendor."
+        },
+        {
+          "AreaId": "2_6_2",
+          "Done": false,
+          "Text": "Run to The Mud Flats."
+        },
+        {
+          "AreaId": "2_6_4",
+          "Done": false,
+          "Text": "The boss is on the right side of the area.\r\nThe exit to The Karui Fortress is on the left."
+        },
+        {
+          "AreaId": "2_6_5",
+          "Done": false,
+          "Text": "Find the boss arena and kill the boss.\r\nContinue to The Ridge."
+        },
+        {
+          "AreaId": "2_6_6",
+          "Done": false,
+          "Text": "Continue to The Lower Prison."
+        },
+        {
+          "AreaId": "2_6_7_1",
+          "Done": false,
+          "Text": "Complete the Trial of Ascendancy.\r\nContinue to Shavronne's Tower."
+        },
+        {
+          "AreaId": "2_6_7_2",
+          "Done": false,
+          "Text": "Reach the boss and kill her.\r\nContinue to Prisoner's Gate."
+        },
+        {
+          "AreaId": "2_6_8",
+          "Done": false,
+          "Text": "Look for a pass between the mountains, find the boss arena, and kill the boss.\r\nReturn to the road and run to The Western Forest."
+        },
+        {
+          "AreaId": "2_6_9",
+          "Done": false,
+          "Text": "Run through to The Riverways."
+        },
+        {
+          "AreaId": "2_6_10",
+          "Done": false,
+          "Text": "Follow the road to the waypoint, then leave the road and head into The Wetlands."
+        },
+        {
+          "AreaId": "2_6_11",
+          "Done": false,
+          "Text": "Reach and kill the boss. Relog to town and waypoint back to The Riverways.\r\nContinue to The Southern Forest."
+        },
+        {
+          "AreaId": "2_6_12",
+          "Done": false,
+          "Text": "Head right to The Cavern of Anger."
+        },
+        {
+          "AreaId": "2_6_13",
+          "Done": false,
+          "Text": "Pick up the quest item.\r\nContinue to The Beacon."
+        },
+        {
+          "AreaId": "2_6_14",
+          "Done": false,
+          "Text": "Keep right and follow the shore to the structures. Activate the beacon.\r\nContinue to The Brine King's Reef."
+        },
+        {
+          "AreaId": "2_6_15",
+          "Done": false,
+          "Text": "Reach the boss and kill him."
+        }
+      ],
+      [
+        {
+          "AreaId": "2_7_1",
+          "Done": false,
+          "Text": "Find the Silver Locket in one of the ruined buildings. Turning it in gives you a choice of flasks.\r\nContinue to The Crossroads."
+        },
+        {
+          "AreaId": "2_7_2",
+          "Done": false,
+          "Text": "Reach the waypoint, then head right into The Fellshrine Ruins."
+        },
+        {
+          "AreaId": "2_7_3",
+          "Done": false,
+          "Text": "Follow the road to The Crypt."
+        },
+        {
+          "AreaId": "2_7_4",
+          "Done": false,
+          "Text": "Complete the Trial of Ascendancy on the upper level.\r\nPick up Maligaro's Map on the lower level.\r\nRelog to town, waypoint to The Crossroads, then go left into the Chamber of Sins."
+        },
+        {
+          "AreaId": "2_7_5_1",
+          "Done": false,
+          "Text": "Head to the centre, activate the waypoint, and use the Map Device."
+        },
+        {
+          "AreaId": "2_7_5_map",
+          "Done": false,
+          "Text": "Kill Maligaro."
+        },
+        {
+          "AreaId": "2_7_5_1",
+          "Done": false,
+          "Text": "Talk to the NPC, then go to Level 2 of the Chamber of Sins."
+        },
+        {
+          "AreaId": "2_7_5_2",
+          "Done": false,
+          "Text": "Complete the Trial of Ascendancy.\r\nContinue to The Den."
+        },
+        {
+          "AreaId": "2_7_6",
+          "Done": false,
+          "Text": "Continue to The Ashen Fields."
+        },
+        {
+          "AreaId": "2_7_7",
+          "Done": false,
+          "Text": "Head down and left to the boss.\r\nContinue to The Northern Forest."
+        },
+        {
+          "AreaId": "2_7_8",
+          "Done": false,
+          "Text": "Head into The Dread Thicket."
+        },
+        {
+          "AreaId": "2_7_9",
+          "Done": false,
+          "Text": "Collect the Fireflies. Enter the boss cave and kill the boss."
+        },
+        {
+          "AreaId": "2_7_8",
+          "Done": false,
+          "Text": "Continue to The Causeway."
+        },
+        {
+          "AreaId": "2_7_10",
+          "Done": false,
+          "Text": "Continue to The Vaal City.\r\nKishara's Star is near the end of the area."
+        },
+        {
+          "AreaId": "2_7_11",
+          "Done": false,
+          "Text": "Continue to the Temple of Decay."
+        },
+        {
+          "AreaId": "2_7_12_1",
+          "Done": false,
+          "Text": "Run through to the next level."
+        },
+        {
+          "AreaId": "2_7_12_2",
+          "Done": false,
+          "Text": "Kill the boss."
+        }
+      ],
+      [
+        {
+          "AreaId": "2_8_1",
+          "Done": false,
+          "Text": "Head to The Sarn Encampment."
+        },
+        {
+          "AreaId": "2_8_town",
+          "Done": false,
+          "Text": "You can run the second Labyrinth here."
+        },
+        {
+          "AreaId": "2_8_2_1",
+          "Done": false,
+          "Text": "Continue to Doedre's Cesspool."
+        },
+        {
+          "AreaId": "2_8_2_2",
+          "Done": false,
+          "Text": "Kill the boss, then head into The Quay."
+        },
+        {
+          "AreaId": "2_8_8",
+          "Done": false,
+          "Text": "Go down and right, cross the narrow bridge, and pick up the quest item.\r\nKeep going right along the bottom of the area.\r\nFind the entrance to the side area with Clarissa.\r\nBack in the main area, head up and right to The Grain Gate."
+        },
+        {
+          "AreaId": "2_8_9",
+          "Done": false,
+          "Text": "Kill the Gemling Legionnaires on the way to the exit.\r\nLook for buildings with corpses outside to guide you.\r\nContinue to The Imperial Fields."
+        },
+        {
+          "AreaId": "2_8_10",
+          "Done": false,
+          "Text": "Continue to the Solaris Temple."
+        },
+        {
+          "AreaId": "2_8_12_1",
+          "Done": false,
+          "Text": "Find the waypoint, then go to the next level."
+        },
+        {
+          "AreaId": "2_8_12_2",
+          "Done": false,
+          "Text": "Kill the boss.\r\nRelog to town and waypoint back to the Solaris Temple, Level 1."
+        },
+        {
+          "AreaId": "2_8_12_1",
+          "Done": false,
+          "Text": "Continue to The Solaris Concourse."
+        },
+        {
+          "AreaId": "2_8_11",
+          "Done": false,
+          "Text": "Head down and left to the waypoint.\r\nContinue to The Harbour Bridge."
+        },
+        {
+          "AreaId": "2_8_13",
+          "Done": false,
+          "Text": "Skip the boss room and run all the way across the area.\r\nContinue to The Lunaris Concourse."
+        },
+        {
+          "AreaId": "2_8_6",
+          "Done": false,
+          "Text": "Activate the waypoint.\r\nEnter the Lunaris Temple."
+        },
+        {
+          "AreaId": "2_8_7_1_",
+          "Done": false,
+          "Text": "Head to the next temple level."
+        },
+        {
+          "AreaId": "2_8_7_2",
+          "Done": false,
+          "Text": "Kill the boss and pick up the quest item.\r\nWaypoint back to The Lunaris Concourse, then head to The Bath House."
+        },
+        {
+          "AreaId": "2_8_5",
+          "Done": false,
+          "Text": "Complete the Trial of Ascendancy.\r\nContinue to The High Gardens."
+        },
+        {
+          "AreaId": "2_8_4",
+          "Done": false,
+          "Text": "Kill the boss, then portal to town.\r\nReturn to The Harbour Bridge and go to the boss room."
+        },
+        {
+          "AreaId": "2_8_13",
+          "Done": false,
+          "Text": "Kill both bosses."
+        }
+      ],
+      [
+        {
+          "AreaId": "2_9_1",
+          "Done": false,
+          "Text": "You can farm here for a while.\r\nRun through to town."
+        },
+        {
+          "AreaId": "2_9_2",
+          "Done": false,
+          "Text": "Continue to The Vastiri Desert."
+        },
+        {
+          "AreaId": "2_9_3",
+          "Done": false,
+          "Text": "Find the waypoint.\r\nFind the Storm Blade.\r\nReturn to town and talk to the NPC.\r\nThen head into The Oasis."
+        },
+        {
+          "AreaId": "2_9_4",
+          "Done": false,
+          "Text": "Kill the boss.\r\nReturn to The Vastiri Desert.\r\nContinue to The Foothills."
+        },
+        {
+          "AreaId": "2_9_5",
+          "Done": false,
+          "Text": "Head up to the waypoint.\r\nContinue to The Boiling Lake."
+        },
+        {
+          "AreaId": "2_9_6",
+          "Done": false,
+          "Text": "The boss is at the top of the area.\r\nWaypoint back to The Foothills.\r\nContinue to The Tunnel."
+        },
+        {
+          "AreaId": "2_9_7",
+          "Done": false,
+          "Text": "Complete the Trial of Ascendancy.\r\nContinue to The Quarry."
+        },
+        {
+          "AreaId": "2_9_8",
+          "Done": false,
+          "Text": "The NPC is in the centre of the area.\r\nEnter The Refinery and kill the boss.\r\nGo to the other side area and defeat Garukhan.\r\nReturn to the NPC.\r\nContinue to The Belly of the Beast."
+        },
+        {
+          "AreaId": "2_9_10_1",
+          "Done": false,
+          "Text": "Continue to The Rotting Core."
+        },
+        {
+          "AreaId": "2_9_10_2",
+          "Done": false,
+          "Text": "Clear all three portals.\r\nKill the boss."
+        }
+      ],
+      [
+        {
+          "AreaId": "2_10_1",
+          "Done": false,
+          "Text": "Head up and left into the side area, kill the cultists, and talk to the NPC.\r\nContinue to The Ravaged Square."
+        },
+        {
+          "AreaId": "2_10_2",
+          "Done": false,
+          "Text": "Open a town portal near the entrance.\r\nGo up and right across the bridge to the waypoint. Use it to return to town, then take the portal you opened.\r\nHead down into The Control Blocks."
+        },
+        {
+          "AreaId": "2_10_7",
+          "Done": false,
+          "Text": "Go through the area and kill the boss.\r\nReturn to The Ravaged Square."
+        },
+        {
+          "AreaId": "2_10_2",
+          "Done": false,
+          "Text": "Head down and right into The Torched Courts."
+        },
+        {
+          "AreaId": "2_10_3",
+          "Done": false,
+          "Text": "Go clockwise until you reach The Desecrated Chambers."
+        },
+        {
+          "AreaId": "2_10_4",
+          "Done": false,
+          "Text": "Go counterclockwise, kill the boss, and take the quest item. Return to town and talk to the NPC.\r\nWaypoint to The Ravaged Square. The entrance to The Ossuary is right by the waypoint."
+        },
+        {
+          "AreaId": "2_10_9",
+          "Done": false,
+          "Text": "Complete the Trial of Ascendancy.\r\nReturn to town and talk to the NPC.\r\nWaypoint to The Ravaged Square. An NPC appears nearby.\r\nContinue to The Canals."
+        },
+        {
+          "AreaId": "2_10_5",
+          "Done": false,
+          "Text": "Continue to The Feeding Trough."
+        },
+        {
+          "AreaId": "2_10_6",
+          "Done": false,
+          "Text": "Go through the area and kill Kitava.\r\nTalk to the NPCs in Oriath and collect the rewards.\r\nYou can run the third Labyrinth.\r\nType /passives. You should have 23 quest passive points if you helped a bandit, or 24 if you killed all three."
+        }
+      ]
+    ]
+  }
+}

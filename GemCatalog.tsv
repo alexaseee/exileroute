@@ -1,0 +1,874 @@
+3.29.3c
+skill	Отпущение	Absolution
+skill	Отпущение вдохновения	Absolution of Inspiring
+support	Поддержка: Урон хаосом	Added Chaos Damage Support
+support	Поддержка: Урон холодом	Added Cold Damage Support
+support	Поддержка: Урон огнём	Added Fire Damage Support
+support	Поддержка: Урон молнией	Added Lightning Damage Support
+support	Поддержка: Меткость	Additional Accuracy Support
+support	Поддержка: Улучшенные ловушки	Advanced Traps Support
+skill	Метка алхимика	Alchemist's Mark
+skill	Засада	Ambush
+support	Поддержка: Зов предков	Ancestral Call Support
+skill	Клич предков	Ancestral Cry
+skill	Защитник предков	Ancestral Protector
+skill	Вождь предков	Ancestral Warchief
+skill	Жгучая злоба	Anger
+skill	Аниматрон	Animate Guardian
+skill	Аниматрон кары	Animate Guardian of Smiting
+skill	Живое оружие	Animate Weapon
+skill	Живое оружие дальнего боя	Animate Weapon of Ranged Arms
+skill	Живое оружие отражения	Animate Weapon of Self Reflection
+support	Поддержка: Изничтожение	Annihilation Support
+skill	Цепь молний	Arc
+skill	Цепь колеблющихся молний	Arc of Oscillating
+skill	Цепь бушующих молний	Arc of Surging
+skill	Чародейский покров	Arcane Cloak
+support	Поддержка: Колдовской выброс	Arcane Surge Support
+skill	Клеймо чаротворца	Arcanist Brand
+support	Поддержка: Архимаг	Archmage Support
+skill	Северная броня	Arctic Armour
+skill	Клеймо Армагеддона	Armageddon Brand
+skill	Клеймо Армагеддона возврата	Armageddon Brand of Recall
+skill	Клеймо Армагеддона нестабильности	Armageddon Brand of Volatility
+support	Поддержка: Заносчивость	Arrogance Support
+support	Поддержка: Кольцо стрел	Arrow Nova Support
+skill	Артиллерийская баллиста	Artillery Ballista
+skill	Артиллерийская баллиста перекрестного огня	Artillery Ballista of Cross Strafe
+skill	Артиллерийская баллиста прицельного огня	Artillery Ballista of Focus Fire
+skill	Метка убийцы	Assassin's Mark
+skill	Автоусиление	Autoexertion
+skill	Автоматизация	Automation
+support	Пробуждённый - Поддержка: Урон хаосом	Awakened Added Chaos Damage Support
+support	Пробуждённый - Поддержка: Урон холодом	Awakened Added Cold Damage Support
+support	Пробуждённый - Поддержка: Урон огнём	Awakened Added Fire Damage Support
+support	Пробуждённый - Поддержка: Урон молнией	Awakened Added Lightning Damage Support
+support	Пробуждённый - Поддержка: Зов предков	Awakened Ancestral Call Support
+support	Пробуждённый - Поддержка: Кольцо стрел	Awakened Arrow Nova Support
+support	Пробуждённый - Поддержка: Богохульство	Awakened Blasphemy Support
+support	Пробуждённый - Поддержка: Жестокость	Awakened Brutality Support
+support	Пробуждённый - Поддержка: Урон от горения	Awakened Burning Damage Support
+support	Пробуждённый - Поддержка: Сотворение чар при критическом ударе	Awakened Cast On Critical Strike Support
+support	Пробуждённый - Поддержка: Сотворение чар при поддержании	Awakened Cast While Channelling Support
+support	Пробуждённый - Поддержка: Цепь	Awakened Chain Support
+support	Пробуждённый - Поддержка: Пронизывающий холод	Awakened Cold Penetration Support
+support	Пробуждённый - Поддержка: Контролируемое разрушение	Awakened Controlled Destruction Support
+support	Пробуждённый - Поддержка: Смертельные состояния	Awakened Deadly Ailments Support
+support	Пробуждённый - Поддержка: Урон от стихий атаками	Awakened Elemental Damage with Attacks Support
+support	Пробуждённый - Поддержка: Концентрация стихий	Awakened Elemental Focus Support
+support	Пробуждённый - Поддержка: Усилитель	Awakened Empower Support
+support	Пробуждённый - Поддержка: Улучшитель	Awakened Enhance Support
+support	Пробуждённый - Поддержка: Наставник	Awakened Enlighten Support
+support	Пробуждённый - Поддержка: Пронизывающий жар	Awakened Fire Penetration Support
+support	Пробуждённый - Поддержка: Разветвление	Awakened Fork Support
+support	Пробуждённый - Поддержка: Щедрость	Awakened Generosity Support
+support	Пробуждённый - Поддержка: Много дополнительных снарядов	Awakened Greater Multiple Projectiles Support
+support	Пробуждённый - Поддержка: Касание порчи	Awakened Hextouch Support
+support	Пробуждённый - Поддержка: Расширенная область действия	Awakened Increased Area of Effect Support
+support	Пробуждённый - Поддержка: Пронизывающие молнии	Awakened Lightning Penetration Support
+support	Пробуждённый - Поддержка: Физический урон ближнего боя	Awakened Melee Physical Damage Support
+support	Пробуждённый - Поддержка: Раскатистый удар	Awakened Melee Splash Support
+support	Пробуждённый - Поддержка: Урон приспешников	Awakened Minion Damage Support
+support	Пробуждённый - Поддержка: Град ударов	Awakened Multistrike Support
+support	Пробуждённый - Поддержка: Каскад чар	Awakened Spell Cascade Support
+support	Пробуждённый - Поддержка: Эхо магии	Awakened Spell Echo Support
+support	Пробуждённый - Поддержка: Стремительный недуг	Awakened Swift Affliction Support
+support	Пробуждённый - Поддержка: Безграничные состояния	Awakened Unbound Ailments Support
+support	Пробуждённый - Поддержка: Высвобождение	Awakened Unleash Support
+support	Пробуждённый - Поддержка: Яростные снаряды	Awakened Vicious Projectiles Support
+support	Пробуждённый - Поддержка: Манипуляция пустотой	Awakened Void Manipulation Support
+skill	Шаровая молния	Ball Lightning
+skill	Шаровая молния орбиты	Ball Lightning of Orbiting
+skill	Шаровая молния неподвижности	Ball Lightning of Static
+support	Поддержка: Тотем-баллиста	Ballista Totem Support
+skill	Погибель	Bane
+skill	Погибель осуждения	Bane of Condemnation
+skill	Очередь	Barrage
+skill	Очередь залпов	Barrage of Volley Fire
+support	Поддержка: Стрельба очередями	Barrage Support
+skill	Клич боевого мага	Battlemage's Cry
+skill	Медвежий капкан	Bear Trap
+skill	Медвежий капкан пронзания	Bear Trap of Skewers
+support	Поддержка: Обезглавливание	Behead Support
+skill	Боевое безумие	Berserk
+skill	Взрыв клинков	Blade Blast
+skill	Взрыв клинков кинжалов	Blade Blast of Dagger Detonation
+skill	Взрыв клинков разрядки	Blade Blast of Unloading
+skill	Порыв клинков	Blade Flurry
+skill	Порыв клинков надреза	Blade Flurry of Incision
+skill	Ловушка лезвий	Blade Trap
+skill	Ловушка лезвий с большими мечами	Blade Trap of Greatswords
+skill	Ловушка лезвий разрубания	Blade Trap of Laceration
+skill	Вихрь клинков	Blade Vortex
+skill	Вихрь клинков косы	Blade Vortex of the Scythe
+skill	Мечепад	Bladefall
+skill	Мечепад пронзания	Bladefall of Impaling
+skill	Мечепад Тератны	Bladefall of Trarthus
+skill	Мечепад града	Bladefall of Volleys
+skill	Ураган лезвий	Bladestorm
+skill	Ураган лезвий неопределённости	Bladestorm of Uncertainty
+support	Поддержка: Богохульство	Blasphemy Support
+skill	Дождь взрывов	Blast Rain
+skill	Дождь взрывов Тератны	Blast Rain of Trarthus
+support	Поддержка: Цепной подрыв	Blastchain Mine Support
+skill	Пылающий залп	Blazing Salvo
+support	Поддержка: Священный призыв	Blessed Call Support
+skill	Мор	Blight
+skill	Мор атрофии	Blight of Atrophy
+skill	Мор инфекции	Blight of Contagion
+support	Поддержка: Ослепление	Blind Support
+skill	Стрела-телепорт	Blink Arrow
+skill	Стрела-телепорт бомбардирующих клонов	Blink Arrow of Bombarding Clones
+skill	Стрела-телепорт радужных клонов	Blink Arrow of Prismatic Clones
+support	Поддержка: Затруднение блока	Block Chance Reduction Support
+skill	Кровь и песок	Blood and Sand
+skill	Кровавый угар	Blood Rage
+support	Поддержка: Кровожадность	Bloodlust Support
+support	Поддержка: Окровавленное знамя	Bloodsoaked Banner Support
+support	Поддержка: Кровавое зверство	Bloodthirst Support
+skill	Обмен телами	Bodyswap
+skill	Обмен телами жертвоприношения	Bodyswap of Sacrifice
+skill	Подношение костей	Bone Offering
+support	Поддержка: Леденящее охлаждение	Bonechill Support
+skill	Дробление костей	Boneshatter
+skill	Дробление костей бойни	Boneshatter of Carnage
+skill	Дробление костей сложного перелома	Boneshatter of Complex Trauma
+support	Поддержка: Костяной шип	Bonespire Support
+skill	Возврат клейм	Brand Recall
+support	Поддержка: Жестокость	Brutality Support
+skill	Горящая стрела	Burning Arrow
+skill	Горящая стрела мощи	Burning Arrow of Vigour
+support	Поддержка: Урон от горения	Burning Damage Support
+support	Поддержка: Сотворение чар при критическом ударе	Cast On Critical Strike Support
+support	Поддержка: Сотворение чар при смерти	Cast on Death Support
+support	Поддержка: Сотворение чар при убийстве в ближнем бою	Cast on Melee Kill Support
+support	Поддержка: Сотворение чар при разрушении барьера	Cast on Ward Break Support
+support	Поддержка: Сотворение чар при получении урона	Cast when Damage Taken Support
+support	Поддержка: Сотворение чар при оглушении	Cast when Stunned Support
+support	Поддержка: Сотворение чар при поддержании	Cast while Channelling Support
+skill	Едкая стрела	Caustic Arrow
+skill	Едкая стрела яда	Caustic Arrow of Poison
+skill	Цепной крюк	Chain Hook
+skill	Цепной крюк выуживания	Chain Hook of Angling
+skill	Цепной крюк Тератны	Chain Hook of Trarthus
+support	Поддержка: Цепь	Chain Support
+support	Поддержка: Шанс кровотечения	Chance to Bleed Support
+support	Поддержка: Паника	Chance to Flee Support
+support	Поддержка: Шанс отравить	Chance to Poison Support
+skill	Заряженный рывок	Charged Dash
+skill	Заряженный рывок проекции	Charged Dash of Projection
+support	Поддержка: Заряженные мины	Charged Mines Support
+support	Поддержка: Заряженные ловушки	Charged Traps Support
+skill	Ясность ума	Clarity
+skill	Рассечение	Cleave
+skill	Рассечение свирепости	Cleave of Rage
+support	Поддержка: Бой вплотную	Close Combat Support
+support	Поддержка: Кассетные ловушки	Cluster Traps Support
+skill	Бросок кобры	Cobra Lash
+support	Поддержка: Пронизывающий холод	Cold Penetration Support
+skill	Укус стужи	Cold Snap
+skill	Укус стужи энергии	Cold Snap of Power
+support	Поддержка: Холод в огонь	Cold to Fire Support
+support	Поддержка: Воспламенение	Combustion Support
+support	Поддержка: Причастие	Communion Support
+support	Поддержка: Товарищество	Companionship Support
+support	Поддержка: Средоточие	Concentrated Effect Support
+skill	Проводимость	Conductivity
+skill	Пожарище	Conflagration
+support	Поддержка: Сонм	Congregation Support
+skill	Освящённый путь	Consecrated Path
+skill	Освящённый путь выносливости	Consecrated Path of Endurance
+skill	Инфекция	Contagion
+skill	Инфекция угасания	Contagion of Subsiding
+skill	Инфекция перенесения	Contagion of Transference
+support	Поддержка: Управляемое горение	Controlled Blaze Support
+support	Поддержка: Контролируемое разрушение	Controlled Destruction Support
+skill	Ловушка переманивания	Conversion Trap
+skill	Сбор	Convocation
+support	Поддержка: Ускорение перезарядки	Cooldown Recovery Support
+support	Поддержка: Оскверняющий клич	Corrupting Cry Support
+skill	Разлагающая лихорадка	Corrupting Fever
+support	Поддержка: Скачущее напряжение	Coursing Current Support
+skill	Искрящееся копьё	Crackling Lance
+skill	Искрящееся копьё ветвления	Crackling Lance of Branching
+skill	Искрящееся копьё расщепления	Crackling Lance of Disintegration
+skill	Ползучий мороз	Creeping Frost
+skill	Ползучий мороз ледяного покрова	Creeping Frost of Floes
+skill	Кремация	Cremation
+skill	Кремация эксгумации	Cremation of Exhuming
+skill	Кремация вулкана	Cremation of the Volcano
+support	Поддержка: Критические удары состояниями	Critical Strike Affliction Support
+support	Поддержка: Злость	Cruelty Support
+skill	Сокрушающий кулак	Crushing Fist
+support	Поддержка: Кристальный обвал	Crystalfall Support
+support	Поддержка: Добивание слабых	Cull the Weak Support
+support	Поддержка: Добивание	Culling Strike Support
+support	Поддержка: Проклятая земля	Cursed Ground Support
+skill	Вихрь	Cyclone
+skill	Вихрь буйства	Cyclone of Tumult
+support	Поддержка: Урон при полном здоровье	Damage on Full Life Support
+skill	Тёмная сделка	Dark Bargain
+skill	Тёмная сделка Тератны	Dark Bargain of Trarthus
+skill	Рывок	Dash
+support	Поддержка: Смертельные состояния	Deadly Ailments Support
+support	Поддержка: Разложение	Decay Support
+skill	Тотем-приманка	Decoy Totem
+skill	Знамя непокорности	Defiance Banner
+skill	Осквернение	Desecrate
+skill	Отчаяние	Despair
+skill	Разрушительная связь	Destructive Link
+skill	Решимость	Determination
+skill	Подрыв трупа	Detonate Dead
+skill	Подрыв трупа цепной реакции	Detonate Dead of Chain Reaction
+skill	Подрыв трупа поглощения	Detonate Dead of Scavenging
+skill	Подрыв мин	Detonate Mines
+support	Поддержка: Пожирание	Devour Support
+skill	Поглощающий тотем	Devouring Totem
+skill	Разряд	Discharge
+skill	Разряд страданий	Discharge of Misery
+skill	Дисциплина	Discipline
+skill	Божественный взрыв	Divine Blast
+skill	Божественный взрыв света	Divine Blast of Radiance
+skill	Божественный гнев	Divine Ire
+skill	Божественный гнев расщепления	Divine Ire of Disintegration
+skill	Божественный гнев священной молнии	Divine Ire of Holy Lightning
+skill	Божественное возмездие	Divine Retribution
+support	Поддержка: Божественный страж	Divine Sentinel Support
+skill	Удар власти	Dominating Blow
+skill	Удар власти вдохновения	Dominating Blow of Inspiring
+skill	Двойной удар	Double Strike
+skill	Двойной удар прокола	Double Strike of Impaling
+skill	Двойной удар импульса	Double Strike of Momentum
+skill	Знамя страха	Dread Banner
+skill	Парный удар	Dual Strike
+skill	Парный удар амбидекстрии	Dual Strike of Ambidexterity
+support	Поддержка: Камнелом	Earthbreaker Support
+skill	Землетрясение	Earthquake
+skill	Землетрясение усиления	Earthquake of Amplification
+skill	Разлом земли	Earthshatter
+skill	Разлом земли хрупкости	Earthshatter of Fragility
+skill	Разлом земли влияния	Earthshatter of Prominence
+support	Поддержка: Затмение	Eclipse Support
+support	Поддержка: Эффективность	Efficacy Support
+support	Поддержка: Мистическое богохульство	Eldritch Blasphemy Support
+support	Поддержка: Стихийное войско	Elemental Army Support
+support	Поддержка: Урон от стихий атаками	Elemental Damage with Attacks Support
+support	Поддержка: Концентрация стихий	Elemental Focus Support
+skill	Удар стихии	Elemental Hit
+skill	Спектральный удар стихии	Elemental Hit of the Spectrum
+support	Поддержка: Пронизывающие стихии	Elemental Penetration Support
+support	Поддержка: Разгул стихий	Elemental Proliferation Support
+skill	Уязвимость к стихиям	Elemental Weakness
+support	Поддержка: Усилитель	Empower Support
+support	Поддержка: Заряд выносливости при оглушении в ближнем бою	Endurance Charge on Melee Stun Support
+skill	Клич стойкости	Enduring Cry
+skill	Клинок энергии	Energy Blade
+support	Поддержка: Похищение энергетического щита	Energy Leech Support
+skill	Слабость	Enfeeble
+support	Поддержка: Улучшитель	Enhance Support
+support	Поддержка: Наставник	Enlighten Support
+skill	Стрела ловчего	Ensnaring Arrow
+skill	Похищение сущности	Essence Drain
+skill	Похищение сущности отчаяния	Essence Drain of Desperation
+skill	Похищение сущности злобы	Essence Drain of Wickedness
+support	Поддержка: Вечное благословение	Eternal Blessing Support
+skill	Бесплотные ножи	Ethereal Knives
+skill	Бесплотные ножи остаточных клинков	Ethereal Knives of Lingering Blades
+skill	Бесплотные ножи резни	Ethereal Knives of the Massacre
+skill	Потрошение	Eviscerate
+support	Поддержка: Отлучение	Excommunicate Support
+support	Поддержка: Эталон	Exemplar Support
+support	Поддержка: Искусная расплата	Expert Retaliation Support
+skill	Взрывная стрела	Explosive Arrow
+skill	Взрывная смесь	Explosive Concoction
+skill	Взрывная смесь разрушения	Explosive Concoction of Destruction
+skill	Взрывная ловушка	Explosive Trap
+skill	Взрывная ловушка интенсивности	Explosive Trap of Magnitude
+skill	Взрывная ловушка осколков	Explosive Trap of Shrapnel
+skill	Обескровливание	Exsanguinate
+skill	Заражающее обескровливание	Exsanguinate of Transmission
+skill	Око зимы	Eye of Winter
+skill	Око зимы необратимости	Eye of Winter of Finality
+skill	Око зимы бренности	Eye of Winter of Transience
+support	Поддержка: Ускорение атак	Faster Attacks Support
+support	Поддержка: Ускоренное сотворение чар	Faster Casting Support
+support	Поддержка: Ускорение снарядов	Faster Projectiles Support
+support	Поддержка: Голодное остервенение	Feeding Frenzy Support
+support	Поддержка: Пронизывающий жар	Fire Penetration Support
+skill	Огненная ловушка	Fire Trap
+skill	Огненная ловушка взрывов	Fire Trap of Blasting
+skill	Огненный шар	Fireball
+skill	Огненный шторм	Firestorm
+skill	Огненный шторм метеоров	Firestorm of Meteors
+skill	Огненный шторм проливного огня	Firestorm of Pelting
+support	Поддержка: Расселина	Fissure Support
+support	Поддержка: Кулак войны	Fist of War Support
+skill	Огненный рывок	Flame Dash
+skill	Огненный рывок возвращения	Flame Dash of Return
+skill	Пламенная связь	Flame Link
+skill	Выброс пламени	Flame Surge
+skill	Выброс пламени возгорания	Flame Surge of Combusting
+skill	Стена пламени	Flame Wall
+skill	Пламенный взрыв	Flameblast
+skill	Пламенный взрыв проворства	Flameblast of Celerity
+skill	Пламенный взрыв сжатия	Flameblast of Contraction
+skill	Ловушка-огнемёт	Flamethrower Trap
+skill	Ловушка-огнемёт стабильности	Flamethrower Trap of Stability
+support	Поддержка: Лучина	Flamewood Support
+skill	Горючесть	Flammability
+skill	Камень и плоть	Flesh and Stone
+skill	Подношение плоти	Flesh Offering
+skill	Внезапный удар	Flicker Strike
+skill	Внезапный удар энергии	Flicker Strike of Power
+support	Поддержка: Прицельная баллиста	Focused Ballista Support
+support	Поддержка: Сфокусированное поддержание	Focused Channelling Support
+skill	Запретный ритуал	Forbidden Rite
+skill	Запретный ритуал жертвоприношения души	Forbidden Rite of Soul Sacrifice
+support	Поддержка: Разветвление	Fork Support
+support	Поддержка: Укрепление	Fortify Support
+support	Поддержка: Дурная хватка	Foulgrasp Support
+skill	Волна холода	Freezing Pulse
+skill	Бешенство	Frenzy
+skill	Бешенство боевого ража	Frenzy of Onslaught
+support	Поддержка: Свежее мясо	Fresh Meat Support
+support	Поддержка: Морозные узы	Frigid Bond Support
+skill	Ледяные клинки	Frost Blades
+skill	Ледяные клинки катабасиса	Frost Blades of Katabasis
+skill	Морозная бомба	Frost Bomb
+skill	Морозная бомба наступления	Frost Bomb of Forthcoming
+skill	Морозная бомба нестабильности	Frost Bomb of Instability
+skill	Морозный щит	Frost Shield
+skill	Стена льда	Frost Wall
+skill	Обморожение	Frostbite
+skill	Ледяной скачок	Frostblink
+skill	Ледяной скачок зимней вьюги	Frostblink of Wintry Blast
+skill	Морозный шар	Frostbolt
+support	Поддержка: Морозная магия	Frostmage Support
+skill	Замёрзший легион	Frozen Legion
+skill	Замёрзший легион сплочения	Frozen Legion of Rallying
+skill	Электризующая стрела	Galvanic Arrow
+skill	Электризующая стрела энергии	Galvanic Arrow of Energy
+skill	Бушующая электризующая стрела	Galvanic Arrow of Surging
+skill	Электризующее поле	Galvanic Field
+skill	Электризующее поле интенсивности	Galvanic Field of Intensity
+skill	Клич полководца	General's Cry
+support	Поддержка: Щедрость	Generosity Support
+skill	Ледяной каскад	Glacial Cascade
+skill	Ледяной каскад разлома	Glacial Cascade of the Fissure
+skill	Леденящий молот	Glacial Hammer
+skill	Леденящий молот разбивания	Glacial Hammer of Shattering
+skill	Взмах ледяного щита	Glacial Shield Swipe
+support	Поддержка: Ненасытность	Gluttony Support
+skill	Грация	Grace
+support	Поддержка: Великий зов предков	Greater Ancestral Call Support
+support	Поддержка: Большая цепь	Greater Chain Support
+support	Поддержка: Большое пожирание	Greater Devour Support
+support	Поддержка: Большое разветвление	Greater Fork Support
+support	Поддержка: Большая кинетическая нестабильность	Greater Kinetic Instability Support
+support	Поддержка: Много дополнительных снарядов	Greater Multiple Projectiles Support
+support	Поддержка: Большой град ударов	Greater Multistrike Support
+support	Поддержка: Большой каскад чар	Greater Spell Cascade Support
+support	Поддержка: Большое эхо магии	Greater Spell Echo Support
+support	Поддержка: Большое высвобождение	Greater Unleash Support
+support	Поддержка: Большой залп	Greater Volley Support
+skill	Сотрясение	Ground Slam
+skill	Сотрясение земли	Ground Slam of Earthshaking
+support	Поддержка: Благословение защитника	Guardian's Blessing Support
+support	Поддержка: Благодать	Hallow Support
+skill	Спешка	Haste
+skill	Холодная ненависть	Hatred
+skill	Тяжёлый удар	Heavy Strike
+skill	Тяжёлый удар Тератны	Heavy Strike of Trarthus
+skill	Вестник агонии	Herald of Agony
+skill	Вестник пепла	Herald of Ash
+skill	Вестник льда	Herald of Ice
+skill	Вестник чистоты	Herald of Purity
+skill	Вестник грома	Herald of Thunder
+support	Поддержка: Расцвет порчи	Hex Bloom Support
+skill	Взрыв порчи	Hexblast
+skill	Взрыв порчи противоречия	Hexblast of Contradiction
+skill	Взрыв порчи разорения	Hexblast of Havoc
+support	Поддержка: Пагуба	Hexpass Support
+support	Поддержка: Жабья порча	Hextoad Support
+support	Поддержка: Касание порчи	Hextouch Support
+support	Поддержка: Усиленная мина	High-Impact Mine Support
+support	Поддержка: Порождение улья	Hiveborn Support
+skill	Тотем священного огня	Holy Flame Totem
+skill	Гневный тотем священного огня	Holy Flame Totem of Ire
+skill	Священные молоты	Holy Hammers
+skill	Священные молоты спиралей	Holy Hammers of Spirals
+skill	Святой удар	Holy Strike
+skill	Священный взмах	Holy Sweep
+skill	Священный взмах падающих молотов	Holy Sweep of Hammerfalls
+skill	Гидросфера	Hydrosphere
+support	Поддержка: Переохлаждение	Hypothermia Support
+support	Поддержка: Укус льда	Ice Bite Support
+skill	Ледяное сокрушение	Ice Crash
+skill	Ритмичное ледяное сокрушение	Ice Crash of Cadence
+skill	Кольцо льда	Ice Nova
+skill	Кольцо льда замораживания	Ice Nova of Deep Freeze
+skill	Кольцо льда морозных шаров	Ice Nova of Frostbolts
+skill	Ледяной выстрел	Ice Shot
+skill	Ледяной выстрел пронзания	Ice Shot of Penetration
+skill	Ледяное копьё	Ice Spear
+skill	Ледяное копьё раскалывания	Ice Spear of Splitting
+skill	Ледяная ловушка	Ice Trap
+skill	Ледяная ловушка пустоты	Ice Trap of Hollowness
+skill	Шквальная мина	Icicle Mine
+skill	Шквальная мина рассеяния	Icicle Mine of Fanning
+skill	Шквальная мина диверсии	Icicle Mine of Sabotage
+support	Поддержка: Распространение поджога	Ignite Proliferation Support
+support	Поддержка: Жертвенность	Immolate Support
+skill	Призыв к бессмертию	Immortal Call
+support	Поддержка: Прокол	Impale Support
+support	Поддержка: Обречённость	Impending Doom Support
+skill	Испепеление	Incinerate
+skill	Массивное испепеление	Incinerate of Expanse
+skill	Испепеление выброса	Incinerate of Venting
+support	Поддержка: Расширенная область действия	Increased Area of Effect Support
+support	Поддержка: Усиление критических ударов	Increased Critical Damage Support
+support	Поддержка: Учащение критических ударов	Increased Critical Strikes Support
+skill	Удар преисподней	Infernal Blow
+skill	Удар преисподней самосожжения	Infernal Blow of Immolation
+skill	Клич преисподней	Infernal Cry
+support	Поддержка: Пылающий легион	Infernal Legion Support
+support	Поддержка: Усиленное поддержание	Infused Channelling Support
+support	Поддержка: Возбуждение	Innervate Support
+support	Поддержка: Вдохновение	Inspiration Support
+support	Поддержка: Интенсивность	Intensify Support
+skill	Устрашающий клич	Intimidating Cry
+skill	Подсознательная связь	Intuitive Link
+support	Поддержка: Изобретательность	Invention Support
+support	Поддержка: Обращение правил	Invert the Rules Support
+support	Поддержка: Железная хватка	Iron Grip Support
+support	Поддержка: Железная воля	Iron Will Support
+support	Поддержка: Количество предметов	Item Quantity Support
+support	Поддержка: Редкость предметов	Item Rarity Support
+skill	Кинетический взрыв	Kinetic Blast
+skill	Кинетический взрыв скопления	Kinetic Blast of Clustering
+skill	Кинетический заряд	Kinetic Bolt
+skill	Дробящий кинетический заряд	Kinetic Bolt of Fragmentation
+skill	Кинетический шквал	Kinetic Fusillade
+skill	Кинетический шквал детонации	Kinetic Fusillade of Detonation
+support	Поддержка: Кинетическая нестабильность	Kinetic Instability Support
+skill	Кинетический дождь	Kinetic Rain
+skill	Кинетический дождь ударов	Kinetic Rain of Impact
+support	Поддержка: Отбрасывание	Knockback Support
+skill	Разрубание	Lacerate
+skill	Разрубание туш	Lacerate of Butchering
+skill	Разрубание кровоизлияния	Lacerate of Haemorrhage
+skill	Пронзающая сталь	Lancing Steel
+skill	Пронзающая сталь разброса	Lancing Steel of Spraying
+skill	Наскок	Leap Slam
+skill	Наскок сотрясения	Leap Slam of Groundbreaking
+support	Поддержка: Сокращение	Less Duration Support
+support	Поддержка: Смертельная доза	Lethal Dose Support
+support	Поддержка: Здоровье за удар	Life Gain on Hit Support
+support	Поддержка: Вытягивание здоровья	Life Leech Support
+support	Поддержка: Жизнеотвод	Lifetap Support
+skill	Стрела молнии	Lightning Arrow
+skill	Стрела молнии проводимости	Lightning Arrow of Electrocution
+skill	Проводник молнии	Lightning Conduit
+skill	Проводник молнии небес	Lightning Conduit of the Heavens
+support	Поддержка: Пронизывающие молнии	Lightning Penetration Support
+skill	Ловушка шпиля молний	Lightning Spire Trap
+skill	Ловушка шпиля молний перегрузки	Lightning Spire Trap of Overloading
+skill	Ловушка шпиля молний искристости	Lightning Spire Trap of Zapping
+skill	Удар молнии	Lightning Strike
+skill	Удар цепной молнии	Lightning Strike of Arcing
+skill	Побеги молний	Lightning Tendrils
+skill	Эксцентричные побеги молний	Lightning Tendrils of Eccentricity
+skill	Нагнетающие побеги молний	Lightning Tendrils of Escalation
+skill	Ловушка молний	Lightning Trap
+skill	Ловушка молний искрения	Lightning Trap of Sparking
+skill	Грозовой переход	Lightning Warp
+support	Поддержка: Живая молния	Living Lightning Support
+support	Поддержка: Направленная мина	Locus Mine Support
+support	Поддержка: Махинации	Machinations Support
+support	Поддержка: Увечье	Maim Support
+skill	Злорадство	Malevolence
+support	Поддержка: Вытягивание маны	Mana Leech Support
+skill	Насыщенный маной посох	Mana-Infused Staff
+skill	Узы маны	Manabond
+support	Поддержка: Стрелы маны	Manaforged Arrows Support
+support	Поддержка: Метка при попадании	Mark On Hit Support
+support	Поддержка: Живой щит	Meat Shield Support
+support	Поддержка: Физический урон ближнего боя	Melee Physical Damage Support
+support	Поддержка: Раскатистый удар	Melee Splash Support
+support	Поддержка: Минное поле	Minefield Support
+support	Поддержка: Урон приспешников	Minion Damage Support
+support	Поддержка: Здоровье приспешников	Minion Life Support
+support	Поддержка: Скорость приспешников	Minion Speed Support
+support	Поддержка: Призрачный лучник	Mirage Archer Support
+skill	Стрела-двойник	Mirror Arrow
+skill	Стрела-двойник бомбардирующих клонов	Mirror Arrow of Bombarding Clones
+skill	Стрела-двойник радужных клонов	Mirror Arrow of Prismatic Clones
+skill	Расплавленный панцирь	Molten Shell
+skill	Магмовый удар	Molten Strike
+skill	Магмовый удар зенита	Molten Strike of the Zenith
+support	Поддержка: Импульс	Momentum Support
+support	Поддержка: Продление	More Duration Support
+support	Поддержка: Дополнительные снаряды	Multiple Projectiles Support
+support	Поддержка: Множество тотемов	Multiple Totems Support
+support	Поддержка: Дополнительные ловушки	Multiple Traps Support
+support	Поддержка: Град ударов	Multistrike Support
+support	Поддержка: Клинок во тьме	Nightblade Support
+skill	Сфера бурь	Orb of Storms
+skill	Сфера бурь шквалов	Orb of Storms of Squalls
+support	Поддержка: Перегрузка	Overcharge Support
+support	Поддержка: Переусиление	Overexertion Support
+support	Поддержка: Перегрев	Overheat Support
+support	Поддержка: Перегруженная интенсивность	Overloaded Intensity Support
+support	Поддержка: Пацифизм	Pacifism Support
+skill	Пакт Беидата	Pact of Beidat
+skill	Пакт Гхорра	Pact of Ghorr
+skill	Пакт К'Таш	Pact of K'Tash
+skill	Пакт Люции	Pact of Lycia
+skill	Клеймо покаяния	Penance Brand
+skill	Клеймо покаяния проводимости	Penance Brand of Conduction
+skill	Рассеивающее клеймо покаяния	Penance Brand of Dissipation
+skill	Пронзающие шипы	Perforate
+skill	Пронзающие шипы резни	Perforate of Bloodshed
+skill	Пронзающие шипы двойственности	Perforate of Duality
+skill	Моровой удар	Pestilent Strike
+skill	Окаменелая кровь	Petrified Blood
+skill	Призрачный бег	Phase Run
+support	Поддержка: Физический урон в молнии	Physical to Lightning Support
+support	Поддержка: Пронзание	Pierce Support
+support	Поддержка: Сосредоточение	Pinpoint Support
+skill	Носитель чумы	Plague Bearer
+skill	Метка браконьера	Poacher's Mark
+support	Поддержка: Стрельба в упор	Point Blank Support
+skill	Ядовитая смесь	Poisonous Concoction
+skill	Отскакивающая ядовитая смесь	Poisonous Concoction of Bouncing
+skill	Портал	Portal
+support	Поддержка: Заряд энергии при критическом ударе	Power Charge On Critical Support
+skill	Перелив энергии	Power Siphon
+skill	Перелив энергии архимага	Power Siphon of the Archmage
+skill	Точность	Precision
+support	Поддержка: Хищник	Predator Support
+skill	Гордость	Pride
+support	Поддержка: Радужная вспышка	Prismatic Burst Support
+skill	Ограждающая связь	Protective Link
+support	Поддержка: Распыление	Pulverise Support
+skill	Надрез	Puncture
+skill	Надрез свежевания	Puncture of Shanking
+skill	Наказание	Punishment
+skill	Очищающее пламя	Purifying Flame
+skill	Очищающее пламя откровения	Purifying Flame of Revelations
+skill	Спасение от стихий	Purity of Elements
+skill	Спасение от огня	Purity of Fire
+skill	Спасение от холода	Purity of Ice
+skill	Спасение от молний	Purity of Lightning
+support	Поддержка: Костёр	Pyre Support
+skill	Пирокластовая мина	Pyroclast Mine
+skill	Пирокластовая мина диверсии	Pyroclast Mine of Sabotage
+skill	Отскок	Quickstep
+support	Поддержка: Свирепость	Rage Support
+skill	Свирепый вихрь	Rage Vortex
+skill	Свирепый вихрь неистовства	Rage Vortex of Berserking
+skill	Ливень стрел	Rain of Arrows
+skill	Артиллерийский ливень стрел	Rain of Arrows of Artillery
+skill	Ливень стрел насыщения	Rain of Arrows of Saturation
+skill	Сотворение призрака	Raise Spectre
+skill	Сотворение бренного призрака	Raise Spectre of Transience
+skill	Поднятие зомби	Raise Zombie
+skill	Поднятие падающего зомби	Raise Zombie of Falling
+skill	Поднятие мощного зомби	Raise Zombie of Slamming
+skill	Клич сплочения	Rallying Cry
+skill	Кровавая жатва	Reap
+skill	Кровавая жатва разделывания	Reap of Butchery
+skill	Опустошение	Reave
+skill	Преломляющее опустошение	Reave of Refraction
+skill	Восполняющий тотем	Rejuvenation Totem
+support	Поддержка: Возвращающиеся снаряды	Returning Projectiles Support
+skill	Праведный огонь	Righteous Fire
+skill	Праведный огонь колдовского благочестия	Righteous Fire of Arcane Devotion
+skill	Ползучая магма	Rolling Magma
+support	Поддержка: Разрывание	Rupture Support
+support	Поддержка: Беспощадность	Ruthless Support
+support	Поддержка: Священные огоньки	Sacred Wisps Support
+support	Поддержка: Жертвоприношение	Sacrifice Support
+support	Поддержка: Садизм	Sadism Support
+skill	Опаляющий луч	Scorching Ray
+skill	Опаляющий луч сожжения	Scorching Ray of Immolation
+support	Поддержка: Вестник презрения	Scornful Herald Support
+skill	Стрела скверны	Scourge Arrow
+skill	Стрела скверны угрозы	Scourge Arrow of Menace
+skill	Обжигающие узы	Searing Bond
+skill	Обжигающие узы детонации	Searing Bond of Detonation
+support	Поддержка: Второе дыхание	Second Wind Support
+skill	Сейсмический клич	Seismic Cry
+skill	Сейсмическая ловушка	Seismic Trap
+skill	Сейсмическая ловушка волн	Seismic Trap of Swells
+skill	Дробящая сталь	Shattering Steel
+skill	Дробящая сталь боезапаса	Shattering Steel of Ammunition
+skill	Удар щитом	Shield Charge
+skill	Сокрушающий щит	Shield Crush
+skill	Сокрушающий щит вождя	Shield Crush of the Chieftain
+skill	Щит света	Shield of Light
+skill	Кольцо молний	Shock Nova
+skill	Кольцо молний процессии	Shock Nova of Procession
+support	Поддержка: Ударная волна	Shockwave Support
+skill	Сотрясающий тотем	Shockwave Totem
+skill	Сотрясающий тотем власти	Shockwave Totem of Authority
+skill	Осколочная баллиста	Shrapnel Ballista
+skill	Стальная осколочная баллиста	Shrapnel Ballista of Steel
+skill	Осадная баллиста	Siege Ballista
+skill	Осадная баллиста осколков	Siege Ballista of Splintering
+skill	Осадная баллиста Тератны	Siege Ballista of Trarthus
+skill	Печать силы	Sigil of Power
+skill	Ловушка переливания	Siphoning Trap
+skill	Ловушка переливания боли	Siphoning Trap of Pain
+support	Поддержка: Замедленные снаряды	Slower Projectiles Support
+skill	Кара	Smite
+skill	Кара божественного правосудия	Smite of Divine Judgement
+skill	Дымовая мина	Smoke Mine
+skill	Прицельный выстрел	Snipe
+skill	Метка снайпера	Sniper's Mark
+skill	Соматический панцирь	Somatic Shell
+skill	Духовная связь	Soul Link
+skill	Разрыв души	Soulrend
+skill	Разрыв души кровавой жатвы	Soulrend of Reaping
+skill	Спиральный разрыв души	Soulrend of the Spiral
+skill	Искра	Spark
+skill	Кольцо искр	Spark of the Nova
+skill	Непредсказуемая искра	Spark of Unpredictability
+skill	Призрачная спираль	Spectral Helix
+skill	Призрачная спираль Тератны	Spectral Helix of Trarthus
+skill	Бросок призрачного щита	Spectral Shield Throw
+skill	Бросок призрачного щита разбивания	Spectral Shield Throw of Shattering
+skill	Бросок призрачного щита Тератны	Spectral Shield Throw of Trarthus
+skill	Призрачный бросок	Spectral Throw
+skill	Призрачный бросок воплощения	Spectral Throw of Materialising
+skill	Призрачный бросок Тератны	Spectral Throw of Trarthus
+support	Поддержка: Каскад чар	Spell Cascade Support
+support	Поддержка: Эхо магии	Spell Echo Support
+support	Поддержка: Колдующий тотем	Spell Totem Support
+support	Поддержка: Чародейский клинок	Spellblade Support
+skill	Чароплёт	Spellslinger
+skill	Подношение духа	Spirit Offering
+skill	Расколотая стрела	Split Arrow
+skill	Расколотая стрела раскалывания	Split Arrow of Splitting
+skill	Раскалывающая сталь	Splitting Steel
+skill	Раскалывающая сталь боезапаса	Splitting Steel of Ammunition
+skill	Статичный разряд	Static Strike
+skill	Статичный разряд надвигающейся молнии	Static Strike of Gathering Lightning
+skill	Стальная кожа	Steelskin
+skill	Клеймо бури	Storm Brand
+skill	Клеймо бури неопределенности	Storm Brand of Indecision
+skill	Грозовой взрыв	Storm Burst
+skill	Грозовой взрыв отталкивания	Storm Burst of Repulsion
+skill	Призыв бури	Storm Call
+skill	Призыв бури Тератны	Storm Call of Trarthus
+skill	Грозовой дождь	Storm Rain
+skill	Грозовой дождь проводника	Storm Rain of the Conduit
+skill	Заградительный грозовой дождь	Storm Rain of the Fence
+skill	Грозовые руны	Stormbind
+skill	Грозовые руны переноса	Stormbind of Teleportation
+skill	Штормовая мина	Stormblast Mine
+support	Поддержка: Оглушение	Stun Support
+skill	Призыв трупного голема	Summon Carrion Golem
+skill	Призыв трупного голема орды	Summon Carrion Golem of Hordes
+skill	Призыв трупного голема-падальщика	Summon Carrion Golem of Scavenging
+skill	Призыв голема хаоса	Summon Chaos Golem
+skill	Призыв голема хаоса орды	Summon Chaos Golem of Hordes
+skill	Призыв голема хаоса водоворота	Summon Chaos Golem of the Maelström
+skill	Призыв голема огня	Summon Flame Golem
+skill	Призыв голема огня орды	Summon Flame Golem of Hordes
+skill	Призыв голема огня метеора	Summon Flame Golem of the Meteor
+skill	Призыв священной реликвии	Summon Holy Relic
+skill	Призыв священной реликвии убеждения	Summon Holy Relic of Conviction
+skill	Призыв голема льда	Summon Ice Golem
+skill	Призыв голема льда орды	Summon Ice Golem of Hordes
+skill	Призыв голема льда разбивания	Summon Ice Golem of Shattering
+skill	Призыв голема молнии	Summon Lightning Golem
+skill	Призыв голема молнии орды	Summon Lightning Golem of Hordes
+support	Поддержка: Призыв фантома	Summon Phantasm Support
+skill	Призыв неистового духа	Summon Raging Spirit
+skill	Чудовищный призыв неистового духа	Summon Raging Spirit of Enormity
+skill	Призыв Жнеца	Summon Reaper
+skill	Призыв Жнеца-потрошителя	Summon Reaper of Eviscerating
+skill	Призыв Жнеца-призрака	Summon Reaper of Revenants
+skill	Сотворение скелетов	Summon Skeletons
+skill	Сотворение скелетов-лучников	Summon Skeletons of Archers
+skill	Сотворение скелетов-магов	Summon Skeletons of Mages
+skill	Призыв мехаботов	Summon Skitterbots
+skill	Призыв каменного голема	Summon Stone Golem
+skill	Призыв каменного голема орды	Summon Stone Golem of Hordes
+skill	Призыв каменного голема охраны	Summon Stone Golem of Safeguarding
+skill	Раскол	Sunder
+skill	Сокрушающий раскол	Sunder of Earthbreaking
+skill	Раскол Тератны	Sunder of Trarthus
+support	Поддержка: Стремительный недуг	Swift Affliction Support
+support	Поддержка: Быстрая сборка	Swift Assembly Support
+support	Поддержка: Быстрое клеймение	Swiftbrand Support
+skill	Буря мечей	Swordstorm
+skill	Тектонический удар	Tectonic Slam
+skill	Тектонический удар катаклизма	Tectonic Slam of Cataclysm
+skill	Щит бури	Tempest Shield
+skill	Путы времени	Temporal Chains
+skill	Временной разрыв	Temporal Rift
+skill	Гроза	Thunderstorm
+skill	Торнадо	Tornado
+skill	Торнадо стихийной хаотичности	Tornado of Elemental Turbulence
+skill	Вихрь стрел	Tornado Shot
+skill	Вихрь стрел раскатов	Tornado Shot of Cloudburst
+skill	Токсичный дождь	Toxic Rain
+skill	Токсичный дождь выброса спор	Toxic Rain of Sporeburst
+skill	Токсичный дождь увядания	Toxic Rain of Withering
+support	Поддержка: Переливание	Transfusion Support
+support	Поддержка: Урон ловушек и мин	Trap and Mine Damage Support
+support	Поддержка: Ловушка	Trap Support
+support	Поддержка: Травма	Trauma Support
+support	Поддержка: Триединство	Trinity Support
+support	Поддержка: Безграничные состояния	Unbound Ailments Support
+skill	Эксгумация	Unearth
+support	Поддержка: Нечестивое триединство	Unholy Trinity Support
+support	Поддержка: Высвобождение	Unleash Support
+support	Поддержка: Срочные приказы	Urgent Orders Support
+skill	Отпущение ваал	Vaal Absolution
+skill	Отпущение ваал (Отпущение вдохновения)	Vaal Absolution (Absolution of Inspiring)
+skill	Вождь предков ваал	Vaal Ancestral Warchief
+skill	Живое оружие ваал	Vaal Animate Weapon
+skill	Живое оружие ваал (Живое оружие дальнего боя)	Vaal Animate Weapon (Animate Weapon of Ranged Arms)
+skill	Живое оружие ваал (Живое оружие отражения)	Vaal Animate Weapon (Animate Weapon of Self Reflection)
+skill	Цепь молний ваал	Vaal Arc
+skill	Цепь молний ваал (Цепь колеблющихся молний)	Vaal Arc (Arc of Oscillating)
+skill	Цепь молний ваал (Цепь бушующих молний)	Vaal Arc (Arc of Surging)
+skill	Северная броня ваал	Vaal Arctic Armour
+skill	Порыв клинков ваал	Vaal Blade Flurry
+skill	Порыв клинков ваал (Порыв клинков надреза)	Vaal Blade Flurry (Blade Flurry of Incision)
+skill	Вихрь клинков ваал	Vaal Blade Vortex
+skill	Вихрь клинков ваал (Вихрь клинков косы)	Vaal Blade Vortex (Blade Vortex of the Scythe)
+skill	Мор ваал	Vaal Blight
+skill	Мор ваал (Мор атрофии)	Vaal Blight (Blight of Atrophy)
+skill	Мор ваал (Мор инфекции)	Vaal Blight (Blight of Contagion)
+skill	Разлом ваал	Vaal Breach
+skill	Горящая стрела ваал	Vaal Burning Arrow
+skill	Горящая стрела ваал (Горящая стрела мощи)	Vaal Burning Arrow (Burning Arrow of Vigour)
+skill	Едкая стрела ваал	Vaal Caustic Arrow
+skill	Едкая стрела ваал (Едкая стрела яда)	Vaal Caustic Arrow (Caustic Arrow of Poison)
+skill	Ясность ума ваал	Vaal Clarity
+skill	Рассечение ваал	Vaal Cleave
+skill	Рассечение ваал (Рассечение свирепости)	Vaal Cleave (Cleave of Rage)
+skill	Укус стужи ваал	Vaal Cold Snap
+skill	Укус стужи ваал (Укус стужи энергии)	Vaal Cold Snap (Cold Snap of Power)
+skill	Вихрь ваал	Vaal Cyclone
+skill	Вихрь ваал (Вихрь буйства)	Vaal Cyclone (Cyclone of Tumult)
+skill	Подрыв трупа ваал	Vaal Detonate Dead
+skill	Подрыв трупа ваал (Подрыв трупа цепной реакции)	Vaal Detonate Dead (Detonate Dead of Chain Reaction)
+skill	Подрыв трупа ваал (Подрыв трупа поглощения)	Vaal Detonate Dead (Detonate Dead of Scavenging)
+skill	Дисциплина ваал	Vaal Discipline
+skill	Господство ваал	Vaal Domination
+skill	Господство ваал (Удар власти вдохновения)	Vaal Domination (Dominating Blow of Inspiring)
+skill	Двойной удар ваал	Vaal Double Strike
+skill	Двойной удар ваал (Двойной удар прокола)	Vaal Double Strike (Double Strike of Impaling)
+skill	Двойной удар ваал (Двойной удар импульса)	Vaal Double Strike (Double Strike of Momentum)
+skill	Землетрясение ваал	Vaal Earthquake
+skill	Землетрясение ваал (Землетрясение усиления)	Vaal Earthquake (Earthquake of Amplification)
+skill	Огненный шар ваал	Vaal Fireball
+skill	Огненный шторм ваал	Vaal Firestorm
+skill	Огненный шторм ваал (Огненный шторм метеоров)	Vaal Firestorm (Firestorm of Meteors)
+skill	Огненный шторм ваал (Огненный шторм проливного огня)	Vaal Firestorm (Firestorm of Pelting)
+skill	Пламенный взрыв ваал	Vaal Flameblast
+skill	Пламенный взрыв ваал (Пламенный взрыв проворства)	Vaal Flameblast (Flameblast of Celerity)
+skill	Пламенный взрыв ваал (Пламенный взрыв сжатия)	Vaal Flameblast (Flameblast of Contraction)
+skill	Внезапный удар ваал	Vaal Flicker Strike
+skill	Внезапный удар ваал (Внезапный удар энергии)	Vaal Flicker Strike (Flicker Strike of Power)
+skill	Леденящий молот ваал	Vaal Glacial Hammer
+skill	Леденящий молот ваал (Леденящий молот разбивания)	Vaal Glacial Hammer (Glacial Hammer of Shattering)
+skill	Грация ваал	Vaal Grace
+skill	Сотрясение ваал	Vaal Ground Slam
+skill	Сотрясение ваал (Сотрясение земли)	Vaal Ground Slam (Ground Slam of Earthshaking)
+skill	Спешка ваал	Vaal Haste
+skill	Кольцо льда ваал	Vaal Ice Nova
+skill	Кольцо льда ваал (Кольцо льда замораживания)	Vaal Ice Nova (Ice Nova of Deep Freeze)
+skill	Кольцо льда ваал (Кольцо льда морозных шаров)	Vaal Ice Nova (Ice Nova of Frostbolts)
+skill	Ледяной выстрел ваал	Vaal Ice Shot
+skill	Ледяной выстрел ваал (Ледяной выстрел пронзания)	Vaal Ice Shot (Ice Shot of Penetration)
+skill	Призыв к бессмертию ваал	Vaal Immortal Call
+skill	Погибель от огня ваал	Vaal Impurity of Fire
+skill	Погибель от холода ваал	Vaal Impurity of Ice
+skill	Погибель от молнии ваал	Vaal Impurity of Lightning
+skill	Стрела молнии ваал	Vaal Lightning Arrow
+skill	Стрела молний ваал (Стрела молнии проводимости)	Vaal Lightning Arrow (Lightning Arrow of Electrocution)
+skill	Удар молнии ваал	Vaal Lightning Strike
+skill	Удар молнии ваал (Удар цепной молнии)	Vaal Lightning Strike (Lightning Strike of Arcing)
+skill	Ловушка молний ваал	Vaal Lightning Trap
+skill	Ловушка молний ваал (Ловушка молний искрения)	Vaal Lightning Trap (Lightning Trap of Sparking)
+skill	Грозовой переход ваал	Vaal Lightning Warp
+skill	Расплавленный панцирь ваал	Vaal Molten Shell
+skill	Магмовый удар ваал	Vaal Molten Strike
+skill	Магмовый удар ваал (Магмовый удар зенита)	Vaal Molten Strike (Molten Strike of the Zenith)
+skill	Перелив энергии ваал	Vaal Power Siphon
+skill	Перелив энергии ваал (Перелив энергии архимага)	Vaal Power Siphon (Power Siphon of the Archmage)
+skill	Ливень стрел ваал	Vaal Rain of Arrows
+skill	Ливень стрел ваал (Артиллерийский ливень стрел)	Vaal Rain of Arrows (Rain of Arrows of Artillery)
+skill	Ливень стрел ваал (Ливень стрел насыщения)	Vaal Rain of Arrows (Rain of Arrows of Saturation)
+skill	Кровавая жатва ваал	Vaal Reap
+skill	Кровавая жатва ваал (Кровавая жатва разделывания)	Vaal Reap (Reap of Butchery)
+skill	Опустошение ваал	Vaal Reave
+skill	Опустошение ваал (Преломляющее опустошение)	Vaal Reave (Reave of Refraction)
+skill	Восполняющий тотем ваал	Vaal Rejuvenation Totem
+skill	Праведный огонь ваал	Vaal Righteous Fire
+skill	Праведный огонь ваал (Праведный огонь колдовского благочестия)	Vaal Righteous Fire (Righteous Fire of Arcane Devotion)
+support	Поддержка: Жертвоприношение ваал	Vaal Sacrifice Support
+skill	Кара ваал	Vaal Smite
+skill	Кара ваал (Кара божественного правосудия)	Vaal Smite (Smite of Divine Judgement)
+skill	Искра ваал	Vaal Spark
+skill	Искра ваал (Кольцо искр)	Vaal Spark (Spark of the Nova)
+skill	Искра ваал (Непредсказуемая искра)	Vaal Spark (Spark of Unpredictability)
+skill	Призрачный бросок ваал	Vaal Spectral Throw
+skill	Призрачный бросок ваал (Призрачный бросок воплощения)	Vaal Spectral Throw (Spectral Throw of Materialising)
+skill	Призрачный бросок ваал (Призрачный бросок Тератны)	Vaal Spectral Throw (Spectral Throw of Trarthus)
+skill	Призыв бури ваал	Vaal Storm Call
+skill	Призыв бури ваал (Призыв бури Тератны)	Vaal Storm Call (Storm Call of Trarthus)
+skill	Сотворение скелетов ваал	Vaal Summon Skeletons
+skill	Сотворение скелетов ваал (Сотворение скелетов-лучников)	Vaal Summon Skeletons (Summon Skeletons of Archers)
+skill	Сотворение скелетов ваал (Сотворение скелетов-магов)	Vaal Summon Skeletons (Summon Skeletons of Mages)
+support	Поддержка: Искушение ваал	Vaal Temptation Support
+skill	Круг яда ваал	Vaal Venom Gyre
+skill	Вулканический разлом ваал	Vaal Volcanic Fissure
+skill	Вулканический разлом ваал (Вулканический разлом зигзагов)	Vaal Volcanic Fissure (Volcanic Fissure of Snaking)
+skill	Иссушающая связь	Vampiric Link
+skill	Клич отмщения	Vengeful Cry
+skill	Круг яда	Venom Gyre
+support	Поддержка: Яростные снаряды	Vicious Projectiles Support
+skill	Расчётливый удар	Vigilant Strike
+support	Поддержка: Едкие токсины	Vile Toxins Support
+skill	Удар гадюки	Viper Strike
+skill	Удар гадюки Мамбы	Viper Strike of the Mamba
+skill	Живучесть	Vitality
+support	Поддержка: Манипуляция пустотой	Void Manipulation Support
+support	Поддержка: Волна пустоты	Void Shockwave Support
+skill	Сфера пустоты	Void Sphere
+skill	Сфера пустоты раздирания	Void Sphere of Rending
+support	Поддержка: Буря пустоты	Voidstorm Support
+skill	Нестабильный труп	Volatile Dead
+skill	Заточённый нестабильный труп	Volatile Dead of Confinement
+skill	Бурлящий нестабильный труп	Volatile Dead of Seething
+support	Поддержка: Нестабильность	Volatility Support
+skill	Вулканический разлом	Volcanic Fissure
+skill	Вулканический разлом зигзагов	Volcanic Fissure of Snaking
+support	Поддержка: Залп	Volley Support
+skill	Вольтаксовая вспышка	Voltaxic Burst
+skill	Пурга	Vortex
+skill	Пурга проекции	Vortex of Projection
+skill	Беззащитность	Vulnerability
+skill	Силовая стена	Wall of Force
+skill	Знамя войны	War Banner
+skill	Метка вождя	Warlord's Mark
+skill	Волна осуждения	Wave of Conviction
+skill	Волна осуждения Тератны	Wave of Conviction of Trarthus
+skill	Шквал клинков	Whirling Blades
+skill	Шальной удар	Wild Strike
+skill	Шальной удар полярности	Wild Strike of Extremes
+support	Поддержка: Порыв ветра	Windburst Support
+skill	Зимняя сфера	Winter Orb
+skill	Клеймо зимы	Wintertide Brand
+skill	Увядание	Wither
+skill	Губительный шаг	Withering Step
+support	Поддержка: Губительное прикосновение	Withering Touch Support
+skill	Грозный гнев	Wrath
+skill	Фанатизм	Zealotry
