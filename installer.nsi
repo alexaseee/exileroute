@@ -25,6 +25,10 @@ VIAddVersionKey /LANG=1033 "ProductVersion" "${APP_VERSION}"
 VIAddVersionKey /LANG=1033 "LegalCopyright" "Copyright (c) 2026 alexaseee"
 
 !define MUI_FINISHPAGE_RUN "$INSTDIR\${APP_EXE}"
+!define MUI_FINISHPAGE_SHOWREADME
+!define MUI_FINISHPAGE_SHOWREADME_TEXT "$(DesktopShortcut)"
+!define MUI_FINISHPAGE_SHOWREADME_FUNCTION CreateDesktopShortcut
+!define MUI_FINISHPAGE_SHOWREADME_NOTCHECKED
 !define MUI_ICON "ExileRoute.ico"
 !define MUI_UNICON "ExileRoute.ico"
 !insertmacro MUI_PAGE_INSTFILES
@@ -40,6 +44,13 @@ LangString MissingFramework ${LANG_RUSSIAN} "Установите Microsoft .NET
 LangString MissingFramework ${LANG_ENGLISH} "Install Microsoft .NET Framework 4.8 or later and run Setup again."
 LangString CloseOverlay ${LANG_RUSSIAN} "Закройте ExileRoute и повторите операцию."
 LangString CloseOverlay ${LANG_ENGLISH} "Close ExileRoute and try again."
+LangString DesktopShortcut ${LANG_RUSSIAN} "Создать ярлык на рабочем столе"
+LangString DesktopShortcut ${LANG_ENGLISH} "Create a desktop shortcut"
+
+Function CreateDesktopShortcut
+    SetShellVarContext current
+    CreateShortcut "$DESKTOP\${APP_NAME}.lnk" "$INSTDIR\${APP_EXE}"
+FunctionEnd
 
 !macro RequireClosed
     System::Call 'kernel32::OpenMutexW(i 0x00100000, i 0, w "Local\PoEActOverlay") p.r0'
@@ -100,6 +111,7 @@ Section "Uninstall"
     SetShellVarContext current
     SetRegView 64
     Delete "$SMPROGRAMS\${APP_NAME}.lnk"
+    Delete "$DESKTOP\${APP_NAME}.lnk"
     Delete "$INSTDIR\${APP_EXE}"
     Delete "$INSTDIR\LICENSE"
     Delete "$INSTDIR\THIRD_PARTY_NOTICES.md"
