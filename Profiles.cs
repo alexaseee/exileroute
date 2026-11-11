@@ -20,6 +20,7 @@ internal sealed class OverlayProfile
     [DataMember] public string Name;
     [DataMember(EmitDefaultValue = false)] public bool IsBuiltIn { get; private set; }
     [DataMember(EmitDefaultValue = false)] public bool IsExileLeveling { get; private set; }
+    [DataMember(EmitDefaultValue = false)] public string PassiveBuildLink;
     [DataMember(Name = "Tasks", EmitDefaultValue = false, Order = 1)] private List<ActTask>[] tasks;
     [DataMember(Name = "Routes", EmitDefaultValue = false, Order = 2)] private List<RouteNote>[] routes;
 
@@ -67,7 +68,7 @@ internal sealed class OverlayProfile
 
     public OverlayProfile Copy(string name)
     {
-        var copy = new OverlayProfile(name);
+        var copy = new OverlayProfile(name) { PassiveBuildLink = PassiveBuildLink };
         for (int i = 0; i < ActCount; i++)
         {
             copy.Tasks[i].AddRange(Tasks[i].Select(task => new ActTask

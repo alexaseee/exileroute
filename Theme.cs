@@ -99,6 +99,35 @@ internal static class Theme
         return button;
     }
 
+    public static Button TreeButton(Control parent, Rectangle bounds, EventHandler click)
+    {
+        var button = (SignalButton)Button(parent, "", bounds, click, focusable: false);
+        button.DrawIcon = DrawTreeIcon;
+        return button;
+    }
+
+    private static void DrawTreeIcon(Graphics graphics, Rectangle bounds, Color color)
+    {
+        float scale = Scale(graphics, 16) / 16f;
+        float left = bounds.Left + (bounds.Width - 16 * scale) / 2;
+        float top = bounds.Top + (bounds.Height - 16 * scale) / 2;
+        var outline = new PointF[]
+        {
+            new PointF(8, 1), new PointF(12.5f, 6), new PointF(10.5f, 6),
+            new PointF(14.5f, 11.5f), new PointF(1.5f, 11.5f), new PointF(5.5f, 6), new PointF(3.5f, 6)
+        };
+        for (int i = 0; i < outline.Length; i++)
+            outline[i] = new PointF(left + outline[i].X * scale, top + outline[i].Y * scale);
+        SmoothingMode smoothing = graphics.SmoothingMode;
+        graphics.SmoothingMode = SmoothingMode.AntiAlias;
+        using (var pen = new Pen(color, 1.4f * scale) { LineJoin = LineJoin.Round, EndCap = LineCap.Round })
+        {
+            graphics.DrawPolygon(pen, outline);
+            graphics.DrawLine(pen, left + 8 * scale, top + 11.5f * scale, left + 8 * scale, top + 15 * scale);
+        }
+        graphics.SmoothingMode = smoothing;
+    }
+
     public static void SetTabState(Button tab, bool selected)
     {
         ((SignalButton)tab).SelectedTab = selected;
@@ -283,6 +312,7 @@ internal static class Theme
     private sealed class SignalButton : Button
     {
         public bool SelectedTab;
+        public Action<Graphics, Rectangle, Color> DrawIcon;
 
         public SignalButton(bool focusable)
         {
@@ -301,7 +331,9 @@ internal static class Theme
             Color stroke = Enabled ? Border : Divider;
             if (hovered && fill != Accent) fill = Selected;
             if (hovered || keyboardFocus || fill == Accent) stroke = Accent;
-            PaintButton(args.Graphics, ClientRectangle, Text, Font, fill, Enabled ? ForeColor : Disabled, stroke, SelectedTab);
+            Color foreground = Enabled ? ForeColor : Disabled;
+            PaintButton(args.Graphics, ClientRectangle, Text, Font, fill, foreground, stroke, SelectedTab);
+            if (DrawIcon != null) DrawIcon(args.Graphics, ClientRectangle, foreground);
         }
 
         protected override void OnMouseEnter(EventArgs args)

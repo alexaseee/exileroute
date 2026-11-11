@@ -3,6 +3,7 @@
 - Каталог локаций использует идентификаторы и названия из [PathOfExile_Translated](https://github.com/gw1108/PathOfExile_Translated) и сверялся с [Exile Leveling](https://github.com/HeartofPhos/exile-leveling).
 - Встроенный профиль **Exile Leveling** адаптирован из [маршрута HeartofPhos](https://github.com/HeartofPhos/exile-leveling/tree/b7b2dd0ed62ae25cf55c74085fa64a1f4d7cf4ba/common/data/routes) под лицензией MIT. Профиль включает старт лиги, Библиотеку и помощь Алире. Шаги сгруппированы по посещениям зон и переведены на русский.
 - Каталог камней использует названия из [торгового каталога Grinding Gear Games](https://www.pathofexile.com/api/trade/data/items) и классификацию из [RePoE](https://repoe-fork.github.io/poe1.html).
+- Режим **Пассивки** загружает выбранный билд через [публичный API pobb.in](https://github.com/Dav1dde/pasteofexile#public-api) и использует [экспорт дерева Grinding Gear Games](https://github.com/grindinggear/skilltree-export).
 - Названия и данные Path of Exile принадлежат Grinding Gear Games. На них распространяются [условия Grinding Gear Games](https://www.pathofexile.com/developer/docs#third-party-policy). Лицензия MIT этого проекта относится к собственному коду.
 - Установщик собран с помощью [NSIS](https://nsis.sourceforge.io/Docs/AppendixI.html).
 

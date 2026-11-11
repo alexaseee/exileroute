@@ -26,8 +26,11 @@ internal enum EditorMode
 {
     Tasks,
     Route,
-    Regex
+    Regex,
+    Passives
 }
+
+internal enum HintMode { Tasks, Route, Passives }
 
 [DataContract]
 internal sealed class OverlaySettings
@@ -46,6 +49,7 @@ internal sealed class OverlaySettings
     [DataMember(Name = "Routes", EmitDefaultValue = false)] private List<RouteNote>[] legacyRoutes;
     [DataMember(Name = "RouteNotes", EmitDefaultValue = false)] private string[] legacyRouteNotes;
     [DataMember] public bool ShowRoute;
+    [DataMember(EmitDefaultValue = false)] public bool ShowPassives;
     [DataMember(Name = "EditorShowRoute", EmitDefaultValue = false)] private bool? legacyEditorShowRoute;
     [DataMember(EmitDefaultValue = false)] public EditorMode? EditorTab = EditorMode.Tasks;
     [DataMember(Name = "SearchRegex", EmitDefaultValue = false)] private string legacySearchRegex;
@@ -63,6 +67,16 @@ internal sealed class OverlaySettings
     public OverlayProfile ActiveProfile { get { return Profiles[ActiveProfileIndex]; } }
     public List<ActTask>[] Tasks { get { return ActiveProfile.Tasks; } }
     public List<RouteNote>[] Routes { get { return ActiveProfile.Routes; } }
+    public HintMode Mode
+    {
+        get { return ShowPassives ? HintMode.Passives : CampaignMode; }
+        set
+        {
+            ShowPassives = value == HintMode.Passives;
+            if (!ShowPassives) ShowRoute = value == HintMode.Route;
+        }
+    }
+    public HintMode CampaignMode { get { return ShowRoute ? HintMode.Route : HintMode.Tasks; } }
     public int OverlayTransparencyPercent
     {
         get { return Math.Max(0, Math.Min(MaxOverlayTransparency, OverlayTransparency ?? DefaultOverlayTransparency)); }
@@ -219,10 +233,14 @@ internal sealed class EditorForm : Form
     private readonly Button tasksTab;
     private readonly Button routeTab;
     private readonly Button regexTab;
+    private readonly Button passivesTab;
     private readonly Panel editorPanel;
     private readonly Panel taskEditor;
     private readonly RouteEditor routeEditor;
     private readonly RegexEditor regexEditor;
+    private readonly Panel passivesEditor;
+    private readonly TextBox passiveLink;
+    private readonly Label passiveLinkError;
     private readonly DataGridView taskGrid;
     private readonly Button addTaskButton;
     private readonly Button editTaskButton;
@@ -339,13 +357,43 @@ internal sealed class EditorForm : Form
         editorPanel.Controls.Add(routeEditor);
         regexEditor = new RegexEditor(settings.RegexEntries, ScheduleSave) { Dock = DockStyle.Fill };
         editorPanel.Controls.Add(regexEditor);
+        passivesEditor = Theme.Panel(editorPanel, Theme.Background, new Rectangle(0, 0, 632, 205));
+        passivesEditor.Dock = DockStyle.Fill;
+        Theme.Label(passivesEditor, "Ссылка на билд pobb.in", 10, Theme.Text, new Rectangle(14, 62, 604, 24),
+            true, "pobb.in build link");
+        passiveLink = new TextBox { Bounds = new Rectangle(14, 95, 481, 28), MaxLength = 256,
+            Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right,
+            BorderStyle = BorderStyle.FixedSingle, BackColor = Theme.Surface, ForeColor = Theme.Text, Font = new Font("Segoe UI", 11) };
+        passiveLink.TextChanged += (sender, args) => passiveLinkError.Visible = false;
+        passiveLink.KeyDown += (sender, args) =>
+        {
+            if (args.KeyCode != Keys.Enter) return;
+            args.SuppressKeyPress = true;
+            ApplyPassiveLink();
+        };
+        passivesEditor.Controls.Add(passiveLink);
+        var loadBuild = Theme.Button(passivesEditor, "Загрузить", new Rectangle(506, 94, 112, 30),
+            (sender, args) => ApplyPassiveLink(), english: "Load build");
+        loadBuild.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+        loadBuild.BackColor = Theme.Accent;
+        loadBuild.ForeColor = Theme.Background;
+        passiveLinkError = Theme.Label(passivesEditor, "Введите ссылку вида https://pobb.in/…", 9, Theme.Warning,
+            new Rectangle(14, 131, 604, 27), english: "Enter a link like https://pobb.in/…");
+        passiveLinkError.Visible = false;
+        Theme.Label(passivesEditor, "Ссылка сохраняется для выбранного профиля. Чтобы убрать билд, очистите поле и нажмите «Загрузить».",
+            9, Theme.Muted, new Rectangle(14, 162, 604, 50),
+            english: "The link is saved for the selected profile. To remove the build, clear the field and click Load build.")
+            .Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
 
-        tasksTab = Theme.Button(editorPanel, "Задачи", new Rectangle(14, 9, 78, 30), (sender, args) => SetEditorMode(EditorMode.Tasks), english: "Tasks");
-        routeTab = Theme.Button(editorPanel, "Маршрут", new Rectangle(100, 9, 94, 30), (sender, args) => SetEditorMode(EditorMode.Route), english: "Route");
-        regexTab = Theme.Button(editorPanel, "Regex", new Rectangle(202, 9, 76, 30), (sender, args) => SetEditorMode(EditorMode.Regex));
+        tasksTab = Theme.Button(editorPanel, "Задачи", new Rectangle(14, 9, 58, 30), (sender, args) => SetEditorMode(EditorMode.Tasks), english: "Tasks");
+        routeTab = Theme.Button(editorPanel, "Маршрут", new Rectangle(78, 9, 68, 30), (sender, args) => SetEditorMode(EditorMode.Route), english: "Route");
+        regexTab = Theme.Button(editorPanel, "Regex", new Rectangle(152, 9, 52, 30), (sender, args) => SetEditorMode(EditorMode.Regex));
+        passivesTab = Theme.Button(editorPanel, "Пассивки", new Rectangle(210, 9, 68, 30),
+            (sender, args) => SetEditorMode(EditorMode.Passives), english: "Passives");
         tasksTab.BringToFront();
         routeTab.BringToFront();
         regexTab.BringToFront();
+        passivesTab.BringToFront();
         var tabDivider = Theme.Panel(editorPanel, Theme.Divider, new Rectangle(14, 44, 604, 1));
         tabDivider.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
         tabDivider.BringToFront();
@@ -369,13 +417,14 @@ internal sealed class EditorForm : Form
         gameButton.ForeColor = Theme.Background;
         gameButton.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
 
-        overlay = new HintOverlay(OpenEditor, StoreOverlayBounds, SetTaskDone, SetRouteNoteDone, ToggleOverlayMode,
+        overlay = new HintOverlay(OpenEditor, StoreOverlayBounds, SetTaskDone, SetRouteNoteDone, ToggleCampaignMode, TogglePassives,
             settings.OverlayTransparencyPercent);
         log = new ClientLog(settings.LogPath ?? ClientLog.Discover());
         RefreshProfilePicker();
         UpdateLanguageControls();
         ApplyEditorMode();
-        overlay.SetMode(settings.ShowRoute);
+        LoadPassiveProfile();
+        ApplyOverlayMode();
         SelectAct(1);
         poll.Tick += (sender, args) => Poll();
         autosave.Tick += (sender, args) => Save();
@@ -447,6 +496,7 @@ internal sealed class EditorForm : Form
     private void OpenEditor()
     {
         if (WindowState == FormWindowState.Minimized) WindowState = FormWindowState.Normal;
+        if (settings.Mode == HintMode.Passives) SetEditorMode(EditorMode.Passives);
         Activate();
     }
 
@@ -511,6 +561,7 @@ internal sealed class EditorForm : Form
         }
 
         if (added != null) RefreshProfilePicker();
+        LoadPassiveProfile();
         SelectAct(selectedAct);
     }
 
@@ -534,6 +585,7 @@ internal sealed class EditorForm : Form
         }
 
         RefreshProfilePicker();
+        LoadPassiveProfile();
         SelectAct(selectedAct);
     }
 
@@ -610,11 +662,50 @@ internal sealed class EditorForm : Form
         ScheduleSave();
     }
 
-    private void ToggleOverlayMode()
+    private void ToggleCampaignMode()
     {
-        settings.ShowRoute = !settings.ShowRoute;
-        overlay.SetMode(settings.ShowRoute);
+        settings.Mode = settings.ShowRoute ? HintMode.Tasks : HintMode.Route;
+        ApplyOverlayMode();
         ScheduleSave();
+    }
+
+    private void TogglePassives()
+    {
+        settings.Mode = settings.ShowPassives ? settings.CampaignMode : HintMode.Passives;
+        ApplyOverlayMode();
+        ScheduleSave();
+    }
+
+    private void LoadPassiveProfile()
+    {
+        passiveLink.Text = settings.ActiveProfile.PassiveBuildLink ?? "";
+        passiveLinkError.Visible = false;
+        if (settings.Mode == HintMode.Passives) overlay.SetPassiveLink(settings.ActiveProfile.PassiveBuildLink);
+    }
+
+    private void ApplyPassiveLink()
+    {
+        string text = passiveLink.Text.Trim();
+        string link = null;
+        if (text.Length > 0 && !PassiveBuild.TryNormalizeLink(text, out link))
+        {
+            passiveLinkError.Visible = true;
+            return;
+        }
+        passiveLink.Text = link ?? "";
+        settings.ActiveProfile.PassiveBuildLink = link;
+        settings.Mode = HintMode.Passives;
+        ApplyOverlayMode(reloadPassives: true);
+        overlay.BringToFront();
+        ScheduleSave();
+    }
+
+    private void ApplyOverlayMode(bool reloadPassives = false)
+    {
+        HintMode mode = settings.Mode;
+        overlay.SetMode(mode, settings.ShowRoute);
+        previewButton.Enabled = mode != HintMode.Passives;
+        if (mode == HintMode.Passives) overlay.SetPassiveLink(settings.ActiveProfile.PassiveBuildLink, reloadPassives);
     }
 
     private void ChangeLanguage(bool english)
@@ -639,6 +730,7 @@ internal sealed class EditorForm : Form
         englishButton.BackColor = UiText.English ? Theme.Accent : Theme.Control;
         englishButton.ForeColor = UiText.English ? Theme.Background : Theme.Text;
         profilePicker.AccessibleName = UiText.Get("Активный профиль", "Active profile");
+        passiveLink.AccessibleName = UiText.Get("Ссылка на билд pobb.in", "pobb.in build link");
         regexEditor.RefreshLanguage();
         taskGrid.Columns[0].HeaderCell.ToolTipText = UiText.Get("Выполнено", "Completed");
         taskGrid.Columns[1].HeaderText = UiText.Get("Условие", "Condition");
@@ -648,12 +740,14 @@ internal sealed class EditorForm : Form
     private void ApplyEditorMode()
     {
         bool regex = settings.EditorTab == EditorMode.Regex;
-        actPicker.Visible = !regex;
-        int editorTop = regex ? actPicker.Top : actPicker.Bottom;
+        bool passives = settings.EditorTab == EditorMode.Passives;
+        actPicker.Visible = !regex && !passives;
+        int editorTop = regex || passives ? actPicker.Top : actPicker.Bottom;
         editorPanel.SetBounds(editorPanel.Left, editorTop, editorPanel.Width, editorPanel.Bottom - editorTop);
         ShowEditorTab(tasksTab, taskEditor, settings.EditorTab == EditorMode.Tasks);
         ShowEditorTab(routeTab, routeEditor, settings.EditorTab == EditorMode.Route);
         ShowEditorTab(regexTab, regexEditor, regex);
+        ShowEditorTab(passivesTab, passivesEditor, passives);
     }
 
     private static void ShowEditorTab(Button tab, Panel panel, bool selected)
@@ -960,10 +1054,13 @@ internal sealed class HintOverlay : Form
     private readonly Label footer;
     private readonly FlowLayoutPanel body;
     private readonly FlowLayoutPanel routeBody;
+    private readonly PassiveTreeView passiveView;
     private readonly Dictionary<ActTask, CheckBox> checkboxes = new Dictionary<ActTask, CheckBox>();
     private readonly Dictionary<RouteNote, CheckBox> routeCheckboxes = new Dictionary<RouteNote, CheckBox>();
     private readonly Button modeButton;
+    private readonly Button passivesButton;
     private readonly Button lockButton;
+    private readonly ToolTip passivesTip = new ToolTip { ShowAlways = true };
     private readonly Action<Rectangle> boundsChanged;
     private readonly Action<ActTask, bool> taskDone;
     private readonly Action<RouteNote, bool> routeNoteDone;
@@ -980,6 +1077,7 @@ internal sealed class HintOverlay : Form
     private bool dragging;
     private bool locked;
     private bool shortcutReady;
+    private HintMode mode;
     private bool showRoute;
     private bool profileReadOnly;
     private int transparencyPercent;
@@ -992,7 +1090,7 @@ internal sealed class HintOverlay : Form
     private Control pendingRouteScroll;
 
     public HintOverlay(Action edit, Action<Rectangle> boundsChanged, Action<ActTask, bool> taskDone,
-        Action<RouteNote, bool> routeNoteDone, Action switchMode,
+        Action<RouteNote, bool> routeNoteDone, Action switchCampaign, Action togglePassives,
         int transparency = OverlaySettings.DefaultOverlayTransparency)
     {
         this.boundsChanged = boundsChanged;
@@ -1013,24 +1111,27 @@ internal sealed class HintOverlay : Form
 
         Theme.Panel(this, Theme.Divider, new Rectangle(0, 0, 1, 324)).Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left;
         var mark = Theme.Mark(this, new Rectangle(16, 13, 16, 16));
-        modeLabel = Theme.Label(this, "", 8, Theme.Muted, new Rectangle(38, 10, 90, 21), true);
+        modeLabel = Theme.Label(this, "", 8, Theme.Muted, new Rectangle(36, 10, 75, 21), true);
         heading = Theme.Label(this, "", 22, Theme.Text, new Rectangle(16, 36, 204, 38), true);
         progress = Theme.Label(this, "", 10, Theme.Accent, new Rectangle(221, 43, 143, 25), true);
         progress.TextAlign = ContentAlignment.MiddleRight;
         progress.Anchor = AnchorStyles.Top | AnchorStyles.Right;
         subtitle = Theme.Label(this, "", 9, Theme.Muted, new Rectangle(16, 73, 348, 24));
         heading.Anchor = subtitle.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
-        modeButton = Theme.Button(this, "", new Rectangle(134, 10, 80, 24), (sender, args) => switchMode(), focusable: false);
+        passivesButton = Theme.TreeButton(this, new Rectangle(113, 10, 28, 24), (sender, args) => togglePassives());
+        modeButton = Theme.Button(this, "", new Rectangle(146, 10, 71, 24), (sender, args) => switchCampaign(), focusable: false);
         modeButton.ForeColor = Theme.Accent;
         var editButton = Theme.Button(this, "Правка", new Rectangle(222, 10, 65, 24), (sender, args) => edit(), english: "Edit");
         lockButton = Theme.Button(this, "Сквозь", new Rectangle(294, 10, 70, 24), (sender, args) => ToggleClickThrough(), english: "Lock");
-        modeButton.Anchor = editButton.Anchor = lockButton.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+        passivesButton.Anchor = modeButton.Anchor = editButton.Anchor = lockButton.Anchor = AnchorStyles.Top | AnchorStyles.Right;
 
         body = CreateCardList();
         Controls.Add(body);
         routeBody = CreateCardList();
         routeBody.AccessibleName = UiText.Get("Маршрут текущего акта", "Route for the current act");
         Controls.Add(routeBody);
+        passiveView = new PassiveTreeView { Location = new Point(16, 44), Visible = false };
+        Controls.Add(passiveView);
         footer = Theme.Label(this, "", 8, Theme.Muted, new Rectangle(16, 292, 348, 24));
         footer.Anchor = AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
         body.SizeChanged += (sender, args) => ResizeCards(body);
@@ -1131,9 +1232,10 @@ internal sealed class HintOverlay : Form
         lockButton.BackColor = locked ? Theme.Accent : Theme.Control;
         lockButton.ForeColor = locked ? Theme.Background : Theme.Text;
         if (locked) FinishResize();
+        if (locked) passiveView.ClearHover();
         int style = Native.GetWindowLong(Handle, Native.ExtendedStyle);
         Native.SetWindowLong(Handle, Native.ExtendedStyle, locked ? style | Native.Transparent : style & ~Native.Transparent);
-        if (locked)
+        if (locked && mode != HintMode.Passives)
             wheelHook = Native.SetWindowsHookEx(Native.LowLevelMouse, wheelCallback, Native.GetModuleHandle(null), 0);
         else
             RemoveWheelHook();
@@ -1144,7 +1246,7 @@ internal sealed class HintOverlay : Form
     {
         if (code == 0 && message == (IntPtr)Native.MouseWheel && locked && IsHandleCreated)
         {
-            FlowLayoutPanel list = showRoute ? routeBody : body;
+            FlowLayoutPanel list = mode == HintMode.Route ? routeBody : body;
             if (list.Visible && list.IsHandleCreated && list.VerticalScroll.Visible && Native.IsWindowEnabled(Handle))
             {
                 var input = (Native.LowLevelMouseInput)Marshal.PtrToStructure(data, typeof(Native.LowLevelMouseInput));
@@ -1183,6 +1285,7 @@ internal sealed class HintOverlay : Form
     {
         if (disposing)
         {
+            passivesTip.Dispose();
             resize.Dispose();
             RemoveWheelHook();
         }
@@ -1191,7 +1294,11 @@ internal sealed class HintOverlay : Form
 
     private void UpdateFooter()
     {
-        if (locked && wheelHook != IntPtr.Zero)
+        if (mode == HintMode.Passives)
+            footer.Text = locked
+                ? UiText.Get("Для управления деревом нажмите ", "Unlock the tree with ") + ClickThroughShortcut
+                : UiText.Get("Колесо меняет масштаб · Потяните дерево", "Wheel to zoom · Drag to pan");
+        else if (locked && wheelHook != IntPtr.Zero)
             footer.Text = UiText.Get("Сквозь  ·  Колесо над списком  ·  ", "Click-through  ·  Wheel over list  ·  ") + ClickThroughShortcut;
         else if (locked)
             footer.Text = UiText.Get("Прокрутка недоступна  ·  ", "Wheel unavailable  ·  ") + ClickThroughShortcut;
@@ -1205,8 +1312,8 @@ internal sealed class HintOverlay : Form
         routeBody.AccessibleName = UiText.Get("Маршрут текущего акта", "Route for the current act");
         displayedRoute = null;
         displayedRouteEmptyText = null;
-        UpdateFooter();
-        SetMode(showRoute);
+        passiveView.RefreshLanguage();
+        SetMode(mode, showRoute);
     }
 
     public void ApplySavedBounds(int? left, int? top, int? width, int? height)
@@ -1240,13 +1347,34 @@ internal sealed class HintOverlay : Form
         UpdateProgress();
     }
 
-    public void SetMode(bool showRoute)
+    public void SetPassiveLink(string link, bool reload = false)
     {
-        this.showRoute = showRoute;
-        modeLabel.Text = showRoute ? UiText.Get("МАРШРУТ", "ROUTE") : UiText.Get("ЗАДАЧИ", "TASKS");
+        passiveView.SetLink(link, reload);
+    }
+
+    public void SetMode(HintMode value, bool campaignRoute)
+    {
+        mode = value;
+        showRoute = campaignRoute;
+        bool passives = mode == HintMode.Passives;
+        if (passives) RemoveWheelHook();
+        else if (locked && wheelHook == IntPtr.Zero)
+            wheelHook = Native.SetWindowsHookEx(Native.LowLevelMouse, wheelCallback, Native.GetModuleHandle(null), 0);
+        modeLabel.Text = passives ? UiText.Get("ПАССИВКИ", "PASSIVES")
+            : mode == HintMode.Route ? UiText.Get("МАРШРУТ", "ROUTE") : UiText.Get("ЗАДАЧИ", "TASKS");
         modeButton.Text = showRoute ? UiText.Get("Задачи", "Tasks") : UiText.Get("Маршрут", "Route");
-        body.Visible = !showRoute;
-        routeBody.Visible = showRoute;
+        passivesButton.AccessibleName = UiText.Get("Пассивки", "Passives");
+        passivesTip.SetToolTip(passivesButton, !passives ? passivesButton.AccessibleName : showRoute
+            ? UiText.Get("Вернуться к маршруту", "Return to route")
+            : UiText.Get("Вернуться к задачам", "Return to tasks"));
+        passivesButton.BackColor = passives ? Theme.Accent : Theme.Control;
+        passivesButton.ForeColor = passives ? Theme.Background : Theme.Accent;
+        heading.Visible = subtitle.Visible = progress.Visible = !passives;
+        body.Visible = mode == HintMode.Tasks;
+        routeBody.Visible = mode == HintMode.Route;
+        passiveView.Visible = passives;
+        if (!passives) passiveView.ClearHover();
+        UpdateFooter();
         UpdateProgress();
     }
 
@@ -1447,7 +1575,7 @@ internal sealed class HintOverlay : Form
             progress.Text = inAct ? UiText.Get("Только чтение", "Read-only") : "";
             return;
         }
-        progress.Text = showRoute ? CompletionText(displayedRoute, note => note.Done) : CompletionText(displayedTasks, task => task.Done);
+        progress.Text = mode == HintMode.Route ? CompletionText(displayedRoute, note => note.Done) : CompletionText(displayedTasks, task => task.Done);
     }
 
     private static string CompletionText<T>(List<T> items, Func<T, bool> isDone)
