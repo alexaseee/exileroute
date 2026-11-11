@@ -4,6 +4,7 @@ using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Json;
@@ -251,10 +252,15 @@ internal sealed class EditorForm : Form
     private readonly RegexEditor regexEditor;
     private readonly PassiveBuildEditor passivesEditor;
     private readonly DataGridView taskGrid;
+    private readonly Button undoTaskButton;
+    private readonly Button redoTaskButton;
     private readonly Button addTaskButton;
     private readonly Button editTaskButton;
     private readonly Button deleteTaskButton;
     private readonly Label noTasks;
+    private readonly ConditionalWeakTable<List<ActTask>, EditHistory<ActTask>> taskHistories =
+        new ConditionalWeakTable<List<ActTask>, EditHistory<ActTask>>();
+    private EditHistory<ActTask> taskHistory;
     private ClientLog log;
     private OverlaySettingsDialog overlaySettingsDialog;
     private int selectedAct = 1;
@@ -328,15 +334,18 @@ internal sealed class EditorForm : Form
         editorPanel = Theme.Panel(this, Theme.Background, new Rectangle(28, actPicker.Bottom, 632, 295));
         editorPanel.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
         taskEditor = Theme.Panel(editorPanel, Theme.Background, new Rectangle(0, 0, 632, 205));
+        undoTaskButton = Theme.Button(taskEditor, "Отменить", new Rectangle(286, 46, 82, 30), (sender, args) => UndoTaskEdit(), english: "Undo");
+        redoTaskButton = Theme.Button(taskEditor, "Повторить", new Rectangle(376, 46, 86, 30), (sender, args) => RedoTaskEdit(), english: "Redo");
         deleteTaskButton = Theme.Button(taskEditor, "Удалить", new Rectangle(285, 9, 82, 30), (sender, args) => DeleteTask(), english: "Delete");
         editTaskButton = Theme.Button(taskEditor, "Изменить", new Rectangle(375, 9, 91, 30), (sender, args) => EditTask(SelectedTask), english: "Edit");
         addTaskButton = Theme.Button(taskEditor, "+ Добавить задачу", new Rectangle(474, 9, 144, 30), (sender, args) => EditTask(null), english: "+ Add task");
         addTaskButton.BackColor = Theme.Accent;
         addTaskButton.ForeColor = Theme.Background;
+        undoTaskButton.Anchor = redoTaskButton.Anchor = AnchorStyles.Top | AnchorStyles.Right;
         deleteTaskButton.Anchor = editTaskButton.Anchor = addTaskButton.Anchor = AnchorStyles.Top | AnchorStyles.Right;
         taskGrid = CreateTaskGrid();
         taskEditor.Controls.Add(taskGrid);
-        noTasks = Theme.Label(taskEditor, "", 10, Theme.Muted, new Rectangle(14, 81, 604, 110));
+        noTasks = Theme.Label(taskEditor, "", 10, Theme.Muted, new Rectangle(14, 112, 604, 79));
         noTasks.Anchor = taskGrid.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
         noTasks.TextAlign = ContentAlignment.MiddleCenter;
         noTasks.BringToFront();
@@ -412,7 +421,7 @@ internal sealed class EditorForm : Form
 
     private DataGridView CreateTaskGrid()
     {
-        var grid = Theme.Grid(new Rectangle(14, 50, 604, 142));
+        var grid = Theme.Grid(new Rectangle(14, 83, 604, 109));
         grid.Columns.Add(new DataGridViewCheckBoxColumn { HeaderText = "✓", Width = 38, FlatStyle = FlatStyle.Flat });
         grid.Columns.Add(new DataGridViewTextBoxColumn { FillWeight = 42,
             AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill, SortMode = DataGridViewColumnSortMode.NotSortable });
@@ -436,6 +445,24 @@ internal sealed class EditorForm : Form
         if (message.Msg == Native.HotkeyMessage && activeShortcutId != 0 && message.WParam.ToInt32() == activeShortcutId)
             overlay.ToggleClickThrough();
         base.WndProc(ref message);
+    }
+
+    protected override bool ProcessCmdKey(ref Message message, Keys keyData)
+    {
+        if (settings.EditorTab == EditorMode.Tasks)
+        {
+            if (keyData == (Keys.Control | Keys.Z) && undoTaskButton.Enabled)
+            {
+                UndoTaskEdit();
+                return true;
+            }
+            if ((keyData == (Keys.Control | Keys.Y) || keyData == (Keys.Control | Keys.Shift | Keys.Z)) && redoTaskButton.Enabled)
+            {
+                RedoTaskEdit();
+                return true;
+            }
+        }
+        return base.ProcessCmdKey(ref message, keyData);
     }
 
     protected override void OnResizeEnd(EventArgs args)
@@ -657,6 +684,7 @@ internal sealed class EditorForm : Form
             actButtons[i].BackColor = selected ? Theme.Accent : Theme.Control;
             actButtons[i].ForeColor = selected ? Theme.Background : Theme.Text;
         }
+        taskHistory = profile.ContentReadOnly ? null : taskHistories.GetValue(SelectedActTasks, tasks => new EditHistory<ActTask>());
         RefreshTaskGrid();
         routeEditor.LoadAct(act, settings.Routes[act - 1], profile.ContentReadOnly);
         UpdateResetButton();
@@ -789,6 +817,8 @@ internal sealed class EditorForm : Form
 
     private void UpdateTaskButtons()
     {
+        undoTaskButton.Enabled = taskHistory != null && taskHistory.CanUndo;
+        redoTaskButton.Enabled = taskHistory != null && taskHistory.CanRedo;
         addTaskButton.Enabled = !settings.ActiveProfile.ContentReadOnly;
         editTaskButton.Enabled = addTaskButton.Enabled && SelectedTask != null;
         deleteTaskButton.Enabled = editTaskButton.Enabled;
@@ -800,12 +830,28 @@ internal sealed class EditorForm : Form
         using (var dialog = new TaskDialog(existing))
         {
             if (dialog.ShowDialog(this) != DialogResult.OK) return;
-            ActTask task = existing ?? new ActTask();
-            task.Condition = dialog.Condition;
-            task.Action = dialog.Action;
-            if (existing == null) SelectedActTasks.Add(task);
-            TasksEdited(task);
+            string condition = dialog.Condition;
+            string action = dialog.Action;
+            if (existing == null)
+            {
+                var task = new ActTask { Condition = condition, Action = action };
+                List<ActTask> tasks = SelectedActTasks;
+                ApplyTaskEdit(() => tasks.Remove(task), () => tasks.Add(task), SelectedTask, task);
+                return;
+            }
+
+            string previousCondition = existing.Condition;
+            string previousAction = existing.Action;
+            if ((previousCondition ?? "") == condition && (previousAction ?? "") == action) return;
+            ApplyTaskEdit(() => SetTaskContent(existing, previousCondition, previousAction),
+                () => SetTaskContent(existing, condition, action), existing, existing);
         }
+    }
+
+    private static void SetTaskContent(ActTask task, string condition, string action)
+    {
+        task.Condition = condition;
+        task.Action = action;
     }
 
     private void DeleteTask()
@@ -815,8 +861,25 @@ internal sealed class EditorForm : Form
         if (task == null) return;
         if (MessageBox.Show(this, UiText.Get("Удалить выбранную задачу?", "Delete the selected task?"), UiText.Get("Задачи по актам", "Campaign tasks"),
             MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button2) != DialogResult.Yes) return;
-        SelectedActTasks.Remove(task);
-        TasksEdited(null);
+        List<ActTask> tasks = SelectedActTasks;
+        int index = tasks.IndexOf(task);
+        ApplyTaskEdit(() => tasks.Insert(index, task), () => tasks.RemoveAt(index), task, null);
+    }
+
+    private void ApplyTaskEdit(Action undo, Action redo, ActTask previousSelection, ActTask selection)
+    {
+        taskHistory.Apply(undo, redo, previousSelection, selection);
+        TasksEdited(selection);
+    }
+
+    private void UndoTaskEdit()
+    {
+        if (taskHistory != null && taskHistory.CanUndo) TasksEdited(taskHistory.Undo());
+    }
+
+    private void RedoTaskEdit()
+    {
+        if (taskHistory != null && taskHistory.CanRedo) TasksEdited(taskHistory.Redo());
     }
 
     private void TasksEdited(ActTask selection)

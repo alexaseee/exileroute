@@ -15,10 +15,9 @@ internal sealed class RouteNote
 
 internal sealed class RouteEditor : Panel
 {
-    private const int HistoryLimit = 5;
     private readonly Action changed;
-    private readonly ConditionalWeakTable<List<RouteNote>, EditHistory> histories =
-        new ConditionalWeakTable<List<RouteNote>, EditHistory>();
+    private readonly ConditionalWeakTable<List<RouteNote>, EditHistory<int>> histories =
+        new ConditionalWeakTable<List<RouteNote>, EditHistory<int>>();
     private readonly ComboBox catalog;
     private readonly DataGridView grid;
     private readonly Label empty;
@@ -31,7 +30,7 @@ internal sealed class RouteEditor : Panel
     private readonly Button add;
     private int act;
     private List<RouteNote> notes;
-    private EditHistory history;
+    private EditHistory<int> history;
     private bool readOnly;
 
     public RouteEditor(Action changed, Action<RouteNote, bool> setDone)
@@ -109,7 +108,7 @@ internal sealed class RouteEditor : Panel
         this.act = act;
         this.notes = notes;
         this.readOnly = readOnly;
-        history = readOnly ? null : histories.GetValue(notes, route => new EditHistory());
+        history = readOnly ? null : histories.GetValue(notes, route => new EditHistory<int>());
         FillPicker(catalog, act, null);
         RefreshGrid(0);
     }
@@ -231,8 +230,7 @@ internal sealed class RouteEditor : Panel
 
     private void ApplyEdit(Action undoEdit, Action redoEdit, int previousSelection, int selection)
     {
-        redoEdit();
-        history.Record(new NoteEdit(undoEdit, redoEdit, previousSelection, selection));
+        history.Apply(undoEdit, redoEdit, previousSelection, selection);
         Commit(selection);
     }
 
@@ -250,55 +248,6 @@ internal sealed class RouteEditor : Panel
     {
         RefreshGrid(selection);
         changed();
-    }
-
-    private sealed class NoteEdit
-    {
-        public readonly Action Undo;
-        public readonly Action Redo;
-        public readonly int PreviousSelection;
-        public readonly int Selection;
-
-        public NoteEdit(Action undo, Action redo, int previousSelection, int selection)
-        {
-            Undo = undo;
-            Redo = redo;
-            PreviousSelection = previousSelection;
-            Selection = selection;
-        }
-    }
-
-    private sealed class EditHistory
-    {
-        private readonly List<NoteEdit> edits = new List<NoteEdit>();
-        private int position;
-
-        public bool CanUndo { get { return position > 0; } }
-        public bool CanRedo { get { return position < edits.Count; } }
-
-        public void Record(NoteEdit edit)
-        {
-            edits.RemoveRange(position, edits.Count - position);
-            edits.Add(edit);
-            if (edits.Count > HistoryLimit) edits.RemoveAt(0);
-            position = edits.Count;
-        }
-
-        public int Undo()
-        {
-            NoteEdit edit = edits[position - 1];
-            edit.Undo();
-            position--;
-            return edit.PreviousSelection;
-        }
-
-        public int Redo()
-        {
-            NoteEdit edit = edits[position];
-            edit.Redo();
-            position++;
-            return edit.Selection;
-        }
     }
 
     private static ComboBox AreaPicker(Rectangle bounds, string name)

@@ -18,6 +18,10 @@ internal static class Theme
     public static readonly Color Warning = Color.FromArgb(231, 181, 124);
     public static readonly Color Selected = Color.FromArgb(34, 59, 68);
     private static readonly Color Disabled = Color.FromArgb(123, 145, 165);
+    private static readonly Color ButtonHover = Color.FromArgb(45, 78, 87);
+    private static readonly Color ButtonPressed = Color.FromArgb(23, 52, 62);
+    private static readonly Color AccentHover = Color.FromArgb(153, 241, 223);
+    private static readonly Color AccentPressed = Color.FromArgb(69, 180, 162);
 
     public static void StyleWindow(Form form)
     {
@@ -194,7 +198,7 @@ internal static class Theme
 
     public static DataGridView Grid(Rectangle bounds)
     {
-        var grid = new DataGridView
+        var grid = new SignalGrid
         {
             Bounds = bounds, BackgroundColor = Surface, GridColor = Divider, BorderStyle = BorderStyle.FixedSingle,
             EnableHeadersVisualStyles = false, ColumnHeadersBorderStyle = DataGridViewHeaderBorderStyle.Single,
@@ -215,24 +219,6 @@ internal static class Theme
         grid.ColumnHeadersDefaultCellStyle.ForeColor = Text;
         grid.ColumnHeadersDefaultCellStyle.SelectionBackColor = Control;
         grid.ColumnHeadersDefaultCellStyle.Padding = new Padding(5, 0, 5, 0);
-        grid.CellPainting += (sender, args) =>
-        {
-            if (args.RowIndex < 0 || args.ColumnIndex < 0) return;
-            var cell = grid.Rows[args.RowIndex].Cells[args.ColumnIndex];
-            if (cell is DataGridViewCheckBoxCell)
-            {
-                args.Paint(args.ClipBounds, args.PaintParts & ~(DataGridViewPaintParts.ContentBackground | DataGridViewPaintParts.ContentForeground));
-                DrawCheck(args.Graphics, args.CellBounds, args.Value is bool && (bool)args.Value, true);
-                args.Handled = true;
-            }
-            else if (cell is DataGridViewButtonCell)
-            {
-                args.Paint(args.ClipBounds, args.PaintParts & ~(DataGridViewPaintParts.ContentBackground | DataGridViewPaintParts.ContentForeground));
-                Rectangle button = Rectangle.Inflate(args.CellBounds, -Scale(args.Graphics, 4), -Scale(args.Graphics, 4));
-                PaintButton(args.Graphics, button, args.FormattedValue as string, args.CellStyle.Font, Control, Text, Border, false);
-                args.Handled = true;
-            }
-        };
         return grid;
     }
 
@@ -264,8 +250,27 @@ internal static class Theme
     }
 
     private static void PaintButton(Graphics graphics, Rectangle bounds, string text, Font font, Color fill, Color foreground,
-        Color stroke, bool selectedTab)
+        bool enabled, bool hovered, bool pressed, bool focused, bool selectedTab = false,
+        Action<Graphics, Rectangle, Color> drawIcon = null)
     {
+        bool accent = fill == Accent;
+        Color stroke = accent ? Accent : Border;
+        if (!enabled)
+        {
+            fill = Surface;
+            foreground = Disabled;
+            stroke = Divider;
+        }
+        else if (pressed)
+        {
+            fill = accent ? AccentPressed : ButtonPressed;
+            stroke = Accent;
+        }
+        else if (hovered || focused)
+        {
+            if (hovered) fill = accent ? AccentHover : ButtonHover;
+            stroke = accent ? Text : Accent;
+        }
         DrawSurface(graphics, bounds, fill, stroke, 5);
         if (selectedTab)
         {
@@ -274,9 +279,11 @@ internal static class Theme
             using (var brush = new SolidBrush(Accent))
                 graphics.FillRectangle(brush, bounds.Left + inset, bounds.Bottom - height - 1, Math.Max(0, bounds.Width - inset * 2), height);
         }
+        if (enabled && pressed) bounds.Offset(0, Scale(graphics, 1));
         TextRenderer.DrawText(graphics, text ?? "", font, Rectangle.Inflate(bounds, -Scale(graphics, 3), 0), foreground,
             TextFormatFlags.HorizontalCenter | TextFormatFlags.VerticalCenter | TextFormatFlags.SingleLine |
             TextFormatFlags.EndEllipsis | TextFormatFlags.NoPrefix);
+        if (drawIcon != null) drawIcon(graphics, bounds, foreground);
     }
 
     private static int Scale(Graphics graphics, int pixels)
@@ -313,6 +320,7 @@ internal static class Theme
     {
         public bool SelectedTab;
         public Action<Graphics, Rectangle, Color> DrawIcon;
+        private bool hovered;
 
         public SignalButton(bool focusable)
         {
@@ -325,27 +333,155 @@ internal static class Theme
         {
             using (var brush = new SolidBrush(Parent == null ? Background : Parent.BackColor))
                 args.Graphics.FillRectangle(brush, args.ClipRectangle);
-            bool hovered = Enabled && ClientRectangle.Contains(PointToClient(MousePosition));
-            bool keyboardFocus = Enabled && Focused && ShowFocusCues;
-            Color fill = Enabled ? BackColor : Surface;
-            Color stroke = Enabled ? Border : Divider;
-            if (hovered && fill != Accent) fill = Selected;
-            if (hovered || keyboardFocus || fill == Accent) stroke = Accent;
-            Color foreground = Enabled ? ForeColor : Disabled;
-            PaintButton(args.Graphics, ClientRectangle, Text, Font, fill, foreground, stroke, SelectedTab);
-            if (DrawIcon != null) DrawIcon(args.Graphics, ClientRectangle, foreground);
+            bool pressed = Enabled && (AccessibilityObject.State & AccessibleStates.Pressed) != 0;
+            PaintButton(args.Graphics, ClientRectangle, Text, Font, BackColor, ForeColor,
+                Enabled, hovered, pressed, Focused && ShowFocusCues, SelectedTab, DrawIcon);
         }
 
         protected override void OnMouseEnter(EventArgs args)
         {
+            hovered = true;
             base.OnMouseEnter(args);
             Invalidate();
         }
 
         protected override void OnMouseLeave(EventArgs args)
         {
+            hovered = false;
             base.OnMouseLeave(args);
             Invalidate();
+        }
+
+        protected override void OnMouseDown(MouseEventArgs args)
+        {
+            base.OnMouseDown(args);
+            if (args.Button == MouseButtons.Left) Update();
+        }
+    }
+
+    private sealed class SignalGrid : DataGridView
+    {
+        private static readonly Point NoButton = new Point(-1, -1);
+        private Point hoveredButton = NoButton;
+        private Point mouseDownButton = NoButton;
+        private Point spaceDownButton = NoButton;
+
+        protected override void OnCellPainting(DataGridViewCellPaintingEventArgs args)
+        {
+            base.OnCellPainting(args);
+            if (args.Handled || args.RowIndex < 0 || args.ColumnIndex < 0) return;
+            DataGridViewCell cell = Rows[args.RowIndex].Cells[args.ColumnIndex];
+            var background = args.PaintParts & ~(DataGridViewPaintParts.ContentBackground | DataGridViewPaintParts.ContentForeground);
+            if (cell is DataGridViewCheckBoxCell)
+            {
+                args.Paint(args.ClipBounds, background);
+                DrawCheck(args.Graphics, args.CellBounds, args.Value is bool && (bool)args.Value, true);
+            }
+            else if (cell is DataGridViewButtonCell)
+            {
+                args.Paint(args.ClipBounds, background & ~DataGridViewPaintParts.Focus);
+                Point address = new Point(args.ColumnIndex, args.RowIndex);
+                Rectangle button = cell.ContentBounds;
+                button.Offset(args.CellBounds.Location);
+                bool hovered = address == hoveredButton;
+                bool pressed = (hovered && address == mouseDownButton) || address == spaceDownButton;
+                bool focused = Focused && ShowFocusCues && address == CurrentCellAddress;
+                PaintButton(args.Graphics, button, args.FormattedValue as string, args.CellStyle.Font, Control, Theme.Text,
+                    Enabled, hovered, pressed, focused);
+            }
+            else return;
+            args.Handled = true;
+        }
+
+        protected override void OnMouseMove(MouseEventArgs args)
+        {
+            base.OnMouseMove(args);
+            SetHoveredButton(ButtonAt(args.Location));
+        }
+
+        protected override void OnMouseLeave(EventArgs args)
+        {
+            SetHoveredButton(NoButton);
+            base.OnMouseLeave(args);
+        }
+
+        protected override void OnScroll(ScrollEventArgs args)
+        {
+            base.OnScroll(args);
+            if (hoveredButton != NoButton) SetHoveredButton(ButtonAt(PointToClient(MousePosition)));
+        }
+
+        protected override void OnMouseDown(MouseEventArgs args)
+        {
+            base.OnMouseDown(args);
+            if (args.Button != MouseButtons.Left) return;
+            SetHoveredButton(ButtonAt(args.Location));
+            SetButton(ref mouseDownButton, hoveredButton);
+            if (mouseDownButton != NoButton) Update();
+        }
+
+        protected override void OnMouseUp(MouseEventArgs args)
+        {
+            if (args.Button == MouseButtons.Left) SetButton(ref mouseDownButton, NoButton);
+            base.OnMouseUp(args);
+        }
+
+        protected override void OnMouseCaptureChanged(EventArgs args)
+        {
+            if (!Capture) SetButton(ref mouseDownButton, NoButton);
+            base.OnMouseCaptureChanged(args);
+        }
+
+        protected override void OnKeyDown(KeyEventArgs args)
+        {
+            if (args.KeyData == Keys.Space && CurrentCell is DataGridViewButtonCell)
+                SetButton(ref spaceDownButton, CurrentCellAddress);
+            base.OnKeyDown(args);
+        }
+
+        protected override void OnKeyUp(KeyEventArgs args)
+        {
+            if (args.KeyCode == Keys.Space) SetButton(ref spaceDownButton, NoButton);
+            base.OnKeyUp(args);
+        }
+
+        protected override void OnLostFocus(EventArgs args)
+        {
+            SetButton(ref spaceDownButton, NoButton);
+            base.OnLostFocus(args);
+        }
+
+        private Point ButtonAt(Point location)
+        {
+            HitTestInfo hit = HitTest(location.X, location.Y);
+            if (hit.Type != DataGridViewHitTestType.Cell) return NoButton;
+            var cell = Rows[hit.RowIndex].Cells[hit.ColumnIndex] as DataGridViewButtonCell;
+            if (cell == null) return NoButton;
+            Rectangle bounds = GetCellDisplayRectangle(hit.ColumnIndex, hit.RowIndex, false);
+            if (!cell.ContentBounds.Contains(location.X - bounds.X, location.Y - bounds.Y)) return NoButton;
+            return new Point(hit.ColumnIndex, hit.RowIndex);
+        }
+
+        private void SetHoveredButton(Point button)
+        {
+            if (button == hoveredButton) return;
+            SetButton(ref hoveredButton, button);
+            Cursor = button == NoButton ? Cursors.Default : Cursors.Hand;
+        }
+
+        private void SetButton(ref Point current, Point button)
+        {
+            if (current == button) return;
+            Point previous = current;
+            current = button;
+            InvalidateButton(previous);
+            InvalidateButton(button);
+        }
+
+        private void InvalidateButton(Point button)
+        {
+            if (button.X >= 0 && button.X < ColumnCount && button.Y >= 0 && button.Y < RowCount)
+                InvalidateCell(button.X, button.Y);
         }
     }
 
