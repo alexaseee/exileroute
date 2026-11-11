@@ -10,6 +10,15 @@ using System.Text;
 using System.Windows.Forms;
 
 [DataContract]
+internal sealed class SavedPassiveBuild
+{
+    [DataMember(EmitDefaultValue = false)] public string Name;
+    [DataMember] public string Link;
+
+    public override string ToString() { return String.IsNullOrEmpty(Name) ? Link ?? "" : Name; }
+}
+
+[DataContract]
 internal sealed class OverlayProfile
 {
     public const int ActCount = 10;
@@ -20,13 +29,23 @@ internal sealed class OverlayProfile
     [DataMember] public string Name;
     [DataMember(EmitDefaultValue = false)] public bool IsBuiltIn { get; private set; }
     [DataMember(EmitDefaultValue = false)] public bool IsExileLeveling { get; private set; }
-    [DataMember(EmitDefaultValue = false)] public string PassiveBuildLink;
+    [DataMember(Name = "PassiveBuildLink", EmitDefaultValue = false)] private string legacyPassiveBuildLink;
+    [DataMember(Name = "PassiveBuilds", EmitDefaultValue = false)] private List<SavedPassiveBuild> passiveBuilds;
+    [DataMember(EmitDefaultValue = false)] public int ActivePassiveBuildIndex;
     [DataMember(Name = "Tasks", EmitDefaultValue = false, Order = 1)] private List<ActTask>[] tasks;
     [DataMember(Name = "Routes", EmitDefaultValue = false, Order = 2)] private List<RouteNote>[] routes;
+    [DataMember(EmitDefaultValue = false)] private int[][] completedTasks;
+    [DataMember(EmitDefaultValue = false)] private int[][] completedRouteNotes;
+    private OverlayProfile builtInContent;
+    private bool builtInEnglish;
 
     public bool ContentReadOnly { get { return IsBuiltIn && (IsExileLeveling || !BuiltInProfile.AuthorBuild); } }
-    public List<ActTask>[] Tasks { get { return IsBuiltIn ? BuiltInProfile.GetContent(IsExileLeveling).Tasks : tasks; } }
-    public List<RouteNote>[] Routes { get { return IsBuiltIn ? BuiltInProfile.GetContent(IsExileLeveling).Routes : routes; } }
+    public List<ActTask>[] Tasks { get { return IsBuiltIn ? GetBuiltInContent().tasks : tasks; } }
+    public List<RouteNote>[] Routes { get { return IsBuiltIn ? GetBuiltInContent().routes : routes; } }
+    public List<SavedPassiveBuild> PassiveBuilds
+    {
+        get { return passiveBuilds ?? (passiveBuilds = new List<SavedPassiveBuild>()); }
+    }
 
     private OverlayProfile() { }
 
@@ -66,14 +85,76 @@ internal sealed class OverlayProfile
             if (lists[i] == null) lists[i] = new List<T>();
     }
 
-    public OverlayProfile Copy(string name)
+    private OverlayProfile GetBuiltInContent()
     {
-        var copy = new OverlayProfile(name) { PassiveBuildLink = PassiveBuildLink };
+        if (builtInContent != null && builtInEnglish == UiText.English) return builtInContent;
+        CaptureCompletion();
+        OverlayProfile template = BuiltInProfile.GetContent(IsExileLeveling);
+        builtInContent = template.Copy(template.Name, includePlayerData: false);
+        builtInEnglish = UiText.English;
+        // The two translations list the same campaign steps in the same order.
+        ApplyCompletion(builtInContent.tasks, completedTasks, task => task.Done = true);
+        ApplyCompletion(builtInContent.routes, completedRouteNotes, note => note.Done = true);
+        return builtInContent;
+    }
+
+    [OnSerializing]
+    private void OnSerializing(StreamingContext context) { CaptureCompletion(); }
+
+    [OnDeserialized]
+    private void RestorePassiveBuilds(StreamingContext context)
+    {
+        string link;
+        if (legacyPassiveBuildLink != null && (passiveBuilds == null || passiveBuilds.Count == 0) &&
+            PassiveBuild.TryNormalizeLink(legacyPassiveBuildLink, out link))
+            PassiveBuilds.Add(new SavedPassiveBuild { Link = link });
+        legacyPassiveBuildLink = null;
+        if (passiveBuilds == null || ActivePassiveBuildIndex < 0 || ActivePassiveBuildIndex >= passiveBuilds.Count)
+            ActivePassiveBuildIndex = 0;
+    }
+
+    private void CaptureCompletion()
+    {
+        if (builtInContent == null) return;
+        completedTasks = CompletedIndices(builtInContent.tasks, task => task.Done);
+        completedRouteNotes = CompletedIndices(builtInContent.routes, note => note.Done);
+    }
+
+    private static int[][] CompletedIndices<T>(List<T>[] acts, Func<T, bool> isDone)
+    {
+        int[][] indices = acts.Select(items => items.Select((item, index) => isDone(item) ? index : -1)
+            .Where(index => index >= 0).ToArray()).ToArray();
+        return indices.Any(act => act.Length > 0) ? indices : null;
+    }
+
+    private static void ApplyCompletion<T>(List<T>[] acts, int[][] completed, Action<T> markDone)
+    {
+        if (completed == null) return;
+        for (int act = 0; act < Math.Min(acts.Length, completed.Length); act++)
+        {
+            if (completed[act] == null) continue;
+            foreach (int index in completed[act])
+                if (index >= 0 && index < acts[act].Count) markDone(acts[act][index]);
+        }
+    }
+
+    public void CopyPassiveBuildsFrom(OverlayProfile source)
+    {
+        passiveBuilds = source.passiveBuilds == null ? null : source.passiveBuilds
+            .Select(build => new SavedPassiveBuild { Name = build.Name, Link = build.Link }).ToList();
+        ActivePassiveBuildIndex = source.ActivePassiveBuildIndex;
+    }
+
+    public OverlayProfile Copy(string name, bool includePlayerData = true)
+    {
+        var copy = new OverlayProfile(name);
+        if (includePlayerData) copy.CopyPassiveBuildsFrom(this);
         for (int i = 0; i < ActCount; i++)
         {
             copy.Tasks[i].AddRange(Tasks[i].Select(task => new ActTask
-                { Condition = task.Condition, Action = task.Action, Done = task.Done }));
-            copy.Routes[i].AddRange(Routes[i].Select(note => new RouteNote { AreaId = note.AreaId, Text = note.Text, Done = note.Done }));
+                { Condition = task.Condition, Action = task.Action, Done = includePlayerData && task.Done }));
+            copy.Routes[i].AddRange(Routes[i].Select(note => new RouteNote
+                { AreaId = note.AreaId, Text = note.Text, Done = includePlayerData && note.Done }));
         }
         return copy;
     }
@@ -86,8 +167,8 @@ internal static class BuiltInProfile
     [DataContract]
     private sealed class LocalizedProfiles
     {
-        [DataMember(Order = 0)] public OverlayProfile Russian { get; private set; }
-        [DataMember(Order = 1)] public OverlayProfile English { get; private set; }
+        [DataMember(Order = 0)] public OverlayProfile Russian { get; set; }
+        [DataMember(Order = 1)] public OverlayProfile English { get; set; }
     }
 
     private const string DefaultFileName = "BuiltInProfile.json";
@@ -125,6 +206,13 @@ internal static class BuiltInProfile
     }
 
 #if EDIT_DEFAULT_PROFILE
+    public static void UpdateDefault(OverlayProfile edited)
+    {
+        OverlayProfile template = edited.Copy(GetContent(false).Name, includePlayerData: false);
+        if (UiText.English) Default.English = template;
+        else Default.Russian = template;
+    }
+
     public static void SaveDefault()
     {
         string temporary = DefaultPath + ".tmp";

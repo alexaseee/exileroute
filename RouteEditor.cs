@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Runtime.CompilerServices;
 using System.Runtime.Serialization;
 using System.Windows.Forms;
 
@@ -14,10 +15,15 @@ internal sealed class RouteNote
 
 internal sealed class RouteEditor : Panel
 {
+    private const int HistoryLimit = 5;
     private readonly Action changed;
+    private readonly ConditionalWeakTable<List<RouteNote>, EditHistory> histories =
+        new ConditionalWeakTable<List<RouteNote>, EditHistory>();
     private readonly ComboBox catalog;
     private readonly DataGridView grid;
     private readonly Label empty;
+    private readonly Button undo;
+    private readonly Button redo;
     private readonly Button up;
     private readonly Button down;
     private readonly Button edit;
@@ -25,14 +31,17 @@ internal sealed class RouteEditor : Panel
     private readonly Button add;
     private int act;
     private List<RouteNote> notes;
+    private EditHistory history;
     private bool readOnly;
 
-    public RouteEditor(Action changed, Action<RouteNote, bool> setDone, Func<bool> canComplete)
+    public RouteEditor(Action changed, Action<RouteNote, bool> setDone)
     {
         this.changed = changed;
         BackColor = Theme.Background;
         Size = new Size(632, 205);
 
+        undo = Theme.Button(this, "Отменить", new Rectangle(286, 46, 82, 30), (sender, args) => UndoEdit(), english: "Undo");
+        redo = Theme.Button(this, "Повторить", new Rectangle(376, 46, 86, 30), (sender, args) => RedoEdit(), english: "Redo");
         up = Theme.Button(this, "↑", new Rectangle(540, 46, 34, 30), (sender, args) => MoveNote(-1));
         down = Theme.Button(this, "↓", new Rectangle(584, 46, 34, 30), (sender, args) => MoveNote(1));
         delete = Theme.Button(this, "Удалить", new Rectangle(285, 9, 82, 30), (sender, args) => DeleteNote(), english: "Delete");
@@ -40,15 +49,17 @@ internal sealed class RouteEditor : Panel
         add = Theme.Button(this, "+ Добавить заметку", new Rectangle(474, 9, 144, 30), (sender, args) => EditNote(-1), english: "+ Add note");
         add.BackColor = Theme.Accent;
         add.ForeColor = Theme.Background;
+        undo.Anchor = redo.Anchor = AnchorStyles.Top | AnchorStyles.Right;
         up.Anchor = down.Anchor = delete.Anchor = edit.Anchor = add.Anchor = AnchorStyles.Top | AnchorStyles.Right;
 
         Theme.Label(this, "Локации акта", 9, Theme.Muted, new Rectangle(14, 46, 105, 28), true, "Act locations");
-        catalog = AreaPicker(new Rectangle(122, 48, 340, 27), UiText.Get("Локации акта", "Act locations"));
+        catalog = AreaPicker(new Rectangle(122, 48, 154, 27), UiText.Get("Локации акта", "Act locations"));
+        catalog.DropDownWidth = 340;
         catalog.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
         Controls.Add(catalog);
         Theme.Label(this, "Порядок", 9, Theme.Muted, new Rectangle(474, 46, 62, 30), english: "Order").Anchor = AnchorStyles.Top | AnchorStyles.Right;
 
-        grid = Theme.Grid(new Rectangle(14, 83, 604, 111), canComplete);
+        grid = Theme.Grid(new Rectangle(14, 83, 604, 111));
         grid.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
         grid.RowTemplate.Height = 27;
         grid.Columns.Add(new DataGridViewCheckBoxColumn { HeaderText = "✓", Width = 38, FlatStyle = FlatStyle.Flat });
@@ -65,7 +76,7 @@ internal sealed class RouteEditor : Panel
         grid.SelectionChanged += (sender, args) => UpdateButtons();
         grid.CellContentClick += (sender, args) =>
         {
-            if (!canComplete() || args.RowIndex < 0 || args.ColumnIndex != 0) return;
+            if (args.RowIndex < 0 || args.ColumnIndex != 0) return;
             RouteNote note = notes[args.RowIndex];
             setDone(note, !note.Done);
         };
@@ -74,6 +85,7 @@ internal sealed class RouteEditor : Panel
             if (args.RowIndex >= 0 && args.ColumnIndex > 0) EditNote(args.RowIndex);
         };
         RefreshLanguage();
+        UpdateButtons();
     }
 
     public void RefreshLanguage()
@@ -97,6 +109,7 @@ internal sealed class RouteEditor : Panel
         this.act = act;
         this.notes = notes;
         this.readOnly = readOnly;
+        history = readOnly ? null : histories.GetValue(notes, route => new EditHistory());
         FillPicker(catalog, act, null);
         RefreshGrid(0);
     }
@@ -131,7 +144,9 @@ internal sealed class RouteEditor : Panel
     private void UpdateButtons()
     {
         int index = SelectedIndex;
-        add.Enabled = !readOnly;
+        undo.Enabled = history != null && history.CanUndo;
+        redo.Enabled = history != null && history.CanRedo;
+        add.Enabled = notes != null && !readOnly;
         edit.Enabled = delete.Enabled = !readOnly && index >= 0;
         up.Enabled = !readOnly && index > 0;
         down.Enabled = !readOnly && index >= 0 && index < grid.Rows.Count - 1;
@@ -140,20 +155,35 @@ internal sealed class RouteEditor : Panel
     private void EditNote(int index)
     {
         if (readOnly) return;
+        List<RouteNote> route = notes;
         bool adding = index < 0;
-        RouteNote note = adding ? new RouteNote { AreaId = ((CampaignArea)catalog.SelectedItem).Id } : notes[index];
+        RouteNote note = adding ? new RouteNote { AreaId = ((CampaignArea)catalog.SelectedItem).Id } : route[index];
         using (var dialog = new NoteDialog(act, note, adding))
         {
             if (dialog.ShowDialog(FindForm()) != DialogResult.OK) return;
-            note.AreaId = dialog.AreaId;
-            note.Text = dialog.NoteText;
+            string areaId = dialog.AreaId;
+            string text = dialog.NoteText;
             if (adding)
             {
-                index = notes.Count;
-                notes.Add(note);
+                note.AreaId = areaId;
+                note.Text = text;
+                int position = route.Count;
+                ApplyEdit(() => route.RemoveAt(position), () => route.Add(note), SelectedIndex, position);
+                return;
             }
-            Commit(index);
+
+            string previousAreaId = note.AreaId;
+            string previousText = note.Text;
+            if (previousAreaId == areaId && (previousText ?? "") == text) return;
+            ApplyEdit(() => SetContent(note, previousAreaId, previousText),
+                () => SetContent(note, areaId, text), index, index);
         }
+    }
+
+    private static void SetContent(RouteNote note, string areaId, string text)
+    {
+        note.AreaId = areaId;
+        note.Text = text;
     }
 
     private void MoveNote(int direction)
@@ -162,10 +192,14 @@ internal sealed class RouteEditor : Panel
         int index = SelectedIndex;
         int destination = index + direction;
         if (index < 0 || destination < 0 || destination >= notes.Count) return;
-        RouteNote note = notes[index];
-        notes.RemoveAt(index);
-        notes.Insert(destination, note);
-        Commit(destination);
+        List<RouteNote> route = notes;
+        Action swap = () =>
+        {
+            RouteNote note = route[index];
+            route[index] = route[destination];
+            route[destination] = note;
+        };
+        ApplyEdit(swap, swap, index, destination);
     }
 
     private void DeleteNote()
@@ -175,14 +209,96 @@ internal sealed class RouteEditor : Panel
         if (index < 0) return;
         if (MessageBox.Show(FindForm(), UiText.Get("Удалить выбранную заметку?", "Delete the selected note?"), UiText.Get("Маршрут", "Route"),
             MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button2) != DialogResult.Yes) return;
-        notes.RemoveAt(index);
-        Commit(Math.Min(index, notes.Count - 1));
+        List<RouteNote> route = notes;
+        RouteNote note = route[index];
+        ApplyEdit(() => route.Insert(index, note), () => route.RemoveAt(index), index, Math.Min(index, route.Count - 2));
+    }
+
+    protected override bool ProcessCmdKey(ref Message message, Keys keyData)
+    {
+        if (keyData == (Keys.Control | Keys.Z) && undo.Enabled)
+        {
+            UndoEdit();
+            return true;
+        }
+        if ((keyData == (Keys.Control | Keys.Y) || keyData == (Keys.Control | Keys.Shift | Keys.Z)) && redo.Enabled)
+        {
+            RedoEdit();
+            return true;
+        }
+        return base.ProcessCmdKey(ref message, keyData);
+    }
+
+    private void ApplyEdit(Action undoEdit, Action redoEdit, int previousSelection, int selection)
+    {
+        redoEdit();
+        history.Record(new NoteEdit(undoEdit, redoEdit, previousSelection, selection));
+        Commit(selection);
+    }
+
+    private void UndoEdit()
+    {
+        if (history != null && history.CanUndo) Commit(history.Undo());
+    }
+
+    private void RedoEdit()
+    {
+        if (history != null && history.CanRedo) Commit(history.Redo());
     }
 
     private void Commit(int selection)
     {
         RefreshGrid(selection);
         changed();
+    }
+
+    private sealed class NoteEdit
+    {
+        public readonly Action Undo;
+        public readonly Action Redo;
+        public readonly int PreviousSelection;
+        public readonly int Selection;
+
+        public NoteEdit(Action undo, Action redo, int previousSelection, int selection)
+        {
+            Undo = undo;
+            Redo = redo;
+            PreviousSelection = previousSelection;
+            Selection = selection;
+        }
+    }
+
+    private sealed class EditHistory
+    {
+        private readonly List<NoteEdit> edits = new List<NoteEdit>();
+        private int position;
+
+        public bool CanUndo { get { return position > 0; } }
+        public bool CanRedo { get { return position < edits.Count; } }
+
+        public void Record(NoteEdit edit)
+        {
+            edits.RemoveRange(position, edits.Count - position);
+            edits.Add(edit);
+            if (edits.Count > HistoryLimit) edits.RemoveAt(0);
+            position = edits.Count;
+        }
+
+        public int Undo()
+        {
+            NoteEdit edit = edits[position - 1];
+            edit.Undo();
+            position--;
+            return edit.PreviousSelection;
+        }
+
+        public int Redo()
+        {
+            NoteEdit edit = edits[position];
+            edit.Redo();
+            position++;
+            return edit.Selection;
+        }
     }
 
     private static ComboBox AreaPicker(Rectangle bounds, string name)

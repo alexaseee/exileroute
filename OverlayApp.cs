@@ -63,6 +63,17 @@ internal sealed class OverlaySettings
     [DataMember(EmitDefaultValue = false)] public int? EditorWidth;
     [DataMember(EmitDefaultValue = false)] public int? EditorHeight;
     [DataMember(EmitDefaultValue = false)] public int? OverlayTransparency;
+    [DataMember(EmitDefaultValue = false)] private int? clickThroughShortcut;
+
+    public Keys ClickThroughShortcut
+    {
+        get
+        {
+            Keys shortcut = (Keys)(clickThroughShortcut ?? (int)OverlayHotkey.Default);
+            return OverlayHotkey.IsValid(shortcut) ? shortcut : OverlayHotkey.Default;
+        }
+        set { clickThroughShortcut = value == OverlayHotkey.Default ? (int?)null : (int)value; }
+    }
 
     public OverlayProfile ActiveProfile { get { return Profiles[ActiveProfileIndex]; } }
     public List<ActTask>[] Tasks { get { return ActiveProfile.Tasks; } }
@@ -128,6 +139,7 @@ internal sealed class OverlaySettings
             bool empty = previous.Tasks.All(act => act.Count == 0) && previous.Routes.All(act => act.Count == 0);
             if (empty || BuiltInProfile.MatchesRussian(previous))
             {
+                builtIn.CopyPassiveBuildsFrom(previous);
                 Profiles[index] = builtIn;
                 return;
             }
@@ -221,13 +233,12 @@ internal sealed class EditorForm : Form
     private readonly Timer autosave = new Timer { Interval = 400 };
     private readonly Panel actPicker;
     private readonly Button[] actButtons = new Button[OverlayProfile.ActCount];
+    private readonly Button resetChecksButton;
     private readonly ComboBox profilePicker;
     private readonly Button deleteProfileButton;
     private readonly Label profileStatus;
     private readonly Button russianButton;
     private readonly Button englishButton;
-    private readonly Label trackingStatus;
-    private readonly Label logPath;
     private readonly Label saveStatus;
     private readonly Button previewButton;
     private readonly Button tasksTab;
@@ -238,22 +249,21 @@ internal sealed class EditorForm : Form
     private readonly Panel taskEditor;
     private readonly RouteEditor routeEditor;
     private readonly RegexEditor regexEditor;
-    private readonly Panel passivesEditor;
-    private readonly TextBox passiveLink;
-    private readonly Label passiveLinkError;
+    private readonly PassiveBuildEditor passivesEditor;
     private readonly DataGridView taskGrid;
     private readonly Button addTaskButton;
     private readonly Button editTaskButton;
     private readonly Button deleteTaskButton;
     private readonly Label noTasks;
     private ClientLog log;
+    private OverlaySettingsDialog overlaySettingsDialog;
     private int selectedAct = 1;
     private int? previewAct;
     private bool dirty;
 #if EDIT_DEFAULT_PROFILE
     private bool defaultProfileDirty;
 #endif
-    private bool shortcutReady;
+    private int activeShortcutId;
 
     public EditorForm(OverlaySettings settings)
     {
@@ -304,16 +314,10 @@ internal sealed class EditorForm : Form
         deleteProfileButton = Theme.Button(this, "Удалить", new Rectangle(581, 99, 79, 30), (sender, args) => DeleteProfile(), english: "Delete");
         deleteProfileButton.Anchor = AnchorStyles.Top | AnchorStyles.Right;
 
-        var connection = Theme.Panel(this, Theme.Surface, new Rectangle(28, 140, 632, 78));
-        connection.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
-        trackingStatus = Theme.Label(connection, "", 11, Theme.Accent, new Rectangle(14, 9, 604, 24), true);
-        logPath = Theme.Label(connection, "", 9, Theme.Muted, new Rectangle(14, 39, 395, 25));
-        trackingStatus.Anchor = logPath.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
-        Theme.Button(connection, "Автопоиск", new Rectangle(418, 37, 86, 29), (sender, args) => SetLog(null), english: "Find log").Anchor = AnchorStyles.Top | AnchorStyles.Right;
-        Theme.Button(connection, "Выбрать…", new Rectangle(512, 37, 106, 29), (sender, args) => Browse(), english: "Browse…").Anchor = AnchorStyles.Top | AnchorStyles.Right;
-
-        actPicker = Theme.Panel(this, Theme.Background, new Rectangle(28, 230, 632, 79));
-        Theme.Label(actPicker, "АКТ КАМПАНИИ", 9, Theme.Accent, new Rectangle(0, 0, 632, 23), true, "CAMPAIGN ACT");
+        actPicker = Theme.Panel(this, Theme.Background, new Rectangle(28, 140, 632, 79));
+        Theme.Label(actPicker, "АКТ КАМПАНИИ", 9, Theme.Accent, new Rectangle(0, 0, 448, 23), true, "CAMPAIGN ACT");
+        resetChecksButton = Theme.Button(actPicker, "Сбросить галочки", new Rectangle(480, 0, 152, 24),
+            (sender, args) => ResetActCompletion(), english: "Reset checkmarks");
         for (int i = 0; i < actButtons.Length; i++)
         {
             int act = i + 1;
@@ -321,10 +325,9 @@ internal sealed class EditorForm : Form
                 (sender, args) => SelectAct(act));
         }
 
-        editorPanel = Theme.Panel(this, Theme.Background, new Rectangle(28, actPicker.Bottom, 632, 205));
+        editorPanel = Theme.Panel(this, Theme.Background, new Rectangle(28, actPicker.Bottom, 632, 295));
         editorPanel.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
         taskEditor = Theme.Panel(editorPanel, Theme.Background, new Rectangle(0, 0, 632, 205));
-        taskEditor.Dock = DockStyle.Fill;
         deleteTaskButton = Theme.Button(taskEditor, "Удалить", new Rectangle(285, 9, 82, 30), (sender, args) => DeleteTask(), english: "Delete");
         editTaskButton = Theme.Button(taskEditor, "Изменить", new Rectangle(375, 9, 91, 30), (sender, args) => EditTask(SelectedTask), english: "Edit");
         addTaskButton = Theme.Button(taskEditor, "+ Добавить задачу", new Rectangle(474, 9, 144, 30), (sender, args) => EditTask(null), english: "+ Add task");
@@ -348,42 +351,22 @@ internal sealed class EditorForm : Form
         {
             if (args.RowIndex >= 0 && args.ColumnIndex > 0) EditTask((ActTask)taskGrid.Rows[args.RowIndex].Tag);
         };
+        taskEditor.Dock = DockStyle.Fill;
 
         routeEditor = new RouteEditor(() =>
         {
             ScheduleProfileSave();
             UpdateOverlay(routeEdited: true);
-        }, SetRouteNoteDone, () => !settings.ActiveProfile.IsBuiltIn) { Dock = DockStyle.Fill };
+        }, SetRouteNoteDone) { Dock = DockStyle.Fill };
         editorPanel.Controls.Add(routeEditor);
         regexEditor = new RegexEditor(settings.RegexEntries, ScheduleSave) { Dock = DockStyle.Fill };
         editorPanel.Controls.Add(regexEditor);
-        passivesEditor = Theme.Panel(editorPanel, Theme.Background, new Rectangle(0, 0, 632, 205));
-        passivesEditor.Dock = DockStyle.Fill;
-        Theme.Label(passivesEditor, "Ссылка на билд pobb.in", 10, Theme.Text, new Rectangle(14, 62, 604, 24),
-            true, "pobb.in build link");
-        passiveLink = new TextBox { Bounds = new Rectangle(14, 95, 481, 28), MaxLength = 256,
-            Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right,
-            BorderStyle = BorderStyle.FixedSingle, BackColor = Theme.Surface, ForeColor = Theme.Text, Font = new Font("Segoe UI", 11) };
-        passiveLink.TextChanged += (sender, args) => passiveLinkError.Visible = false;
-        passiveLink.KeyDown += (sender, args) =>
+        passivesEditor = new PassiveBuildEditor(index => OpenPassiveBuild(index, reload: true), () =>
         {
-            if (args.KeyCode != Keys.Enter) return;
-            args.SuppressKeyPress = true;
-            ApplyPassiveLink();
-        };
-        passivesEditor.Controls.Add(passiveLink);
-        var loadBuild = Theme.Button(passivesEditor, "Загрузить", new Rectangle(506, 94, 112, 30),
-            (sender, args) => ApplyPassiveLink(), english: "Load build");
-        loadBuild.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-        loadBuild.BackColor = Theme.Accent;
-        loadBuild.ForeColor = Theme.Background;
-        passiveLinkError = Theme.Label(passivesEditor, "Введите ссылку вида https://pobb.in/…", 9, Theme.Warning,
-            new Rectangle(14, 131, 604, 27), english: "Enter a link like https://pobb.in/…");
-        passiveLinkError.Visible = false;
-        Theme.Label(passivesEditor, "Ссылка сохраняется для выбранного профиля. Чтобы убрать билд, очистите поле и нажмите «Загрузить».",
-            9, Theme.Muted, new Rectangle(14, 162, 604, 50),
-            english: "The link is saved for the selected profile. To remove the build, clear the field and click Load build.")
-            .Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+            if (settings.ShowPassives) ApplyOverlayMode();
+            ScheduleSave();
+        }) { Dock = DockStyle.Fill };
+        editorPanel.Controls.Add(passivesEditor);
 
         tasksTab = Theme.Button(editorPanel, "Задачи", new Rectangle(14, 9, 58, 30), (sender, args) => SetEditorMode(EditorMode.Tasks), english: "Tasks");
         routeTab = Theme.Button(editorPanel, "Маршрут", new Rectangle(78, 9, 68, 30), (sender, args) => SetEditorMode(EditorMode.Route), english: "Route");
@@ -405,26 +388,17 @@ internal sealed class EditorForm : Form
             UpdateOverlay();
         });
         previewButton.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
-        saveStatus = Theme.Label(this, UiText.Get("Автосохранение", "Autosave"), 9, Theme.Muted, new Rectangle(180, 530, 355, 38));
+        saveStatus = Theme.Label(this, UiText.Get("Автосохранение", "Autosave"), 9, Theme.Muted, new Rectangle(180, 530, 480, 38));
         saveStatus.Anchor = AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
-        var gameButton = Theme.Button(this, "К игре", new Rectangle(551, 532, 109, 34), (sender, args) =>
-        {
-            previewAct = null;
-            UpdateOverlay();
-            WindowState = FormWindowState.Minimized;
-        }, english: "Back to game");
-        gameButton.BackColor = Theme.Accent;
-        gameButton.ForeColor = Theme.Background;
-        gameButton.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
 
         overlay = new HintOverlay(OpenEditor, StoreOverlayBounds, SetTaskDone, SetRouteNoteDone, ToggleCampaignMode, TogglePassives,
+            index => OpenPassiveBuild(index, reload: false),
             settings.OverlayTransparencyPercent);
         log = new ClientLog(settings.LogPath ?? ClientLog.Discover());
         RefreshProfilePicker();
         UpdateLanguageControls();
         ApplyEditorMode();
         LoadPassiveProfile();
-        ApplyOverlayMode();
         SelectAct(1);
         poll.Tick += (sender, args) => Poll();
         autosave.Tick += (sender, args) => Save();
@@ -438,7 +412,7 @@ internal sealed class EditorForm : Form
 
     private DataGridView CreateTaskGrid()
     {
-        var grid = Theme.Grid(new Rectangle(14, 50, 604, 142), () => !settings.ActiveProfile.IsBuiltIn);
+        var grid = Theme.Grid(new Rectangle(14, 50, 604, 142));
         grid.Columns.Add(new DataGridViewCheckBoxColumn { HeaderText = "✓", Width = 38, FlatStyle = FlatStyle.Flat });
         grid.Columns.Add(new DataGridViewTextBoxColumn { FillWeight = 42,
             AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill, SortMode = DataGridViewColumnSortMode.NotSortable });
@@ -450,8 +424,7 @@ internal sealed class EditorForm : Form
     protected override void OnShown(EventArgs args)
     {
         base.OnShown(args);
-        shortcutReady = Native.RegisterHotKey(Handle, Native.LockShortcut, 0x4000 | 0x0002 | 0x0004, (uint)Keys.D9);
-        overlay.AllowClickThrough(shortcutReady);
+        TryRegisterShortcut(settings.ClickThroughShortcut);
         overlay.ApplySavedBounds(settings.Left, settings.Top, settings.OverlayWidth, settings.OverlayHeight);
         Poll();
         overlay.Show();
@@ -460,7 +433,7 @@ internal sealed class EditorForm : Form
 
     protected override void WndProc(ref Message message)
     {
-        if (message.Msg == 0x0312 && message.WParam.ToInt32() == Native.LockShortcut && shortcutReady)
+        if (message.Msg == Native.HotkeyMessage && activeShortcutId != 0 && message.WParam.ToInt32() == activeShortcutId)
             overlay.ToggleClickThrough();
         base.WndProc(ref message);
     }
@@ -486,7 +459,7 @@ internal sealed class EditorForm : Form
 
     protected override void OnFormClosed(FormClosedEventArgs args)
     {
-        if (shortcutReady) Native.UnregisterHotKey(Handle, Native.LockShortcut);
+        if (activeShortcutId != 0) Native.UnregisterHotKey(Handle, activeShortcutId);
         poll.Dispose();
         autosave.Dispose();
         overlay.Dispose();
@@ -502,13 +475,50 @@ internal sealed class EditorForm : Form
 
     private void ShowOverlaySettings()
     {
-        using (var dialog = new OverlayAppearanceDialog(settings.OverlayTransparencyPercent, percent =>
+        using (var dialog = new OverlaySettingsDialog(settings.OverlayTransparencyPercent, percent =>
         {
             settings.OverlayTransparency = percent;
             overlay.SetTransparency(percent);
             ScheduleSave();
-        }))
-            dialog.ShowDialog(this);
+        }, settings.ClickThroughShortcut, activeShortcutId != 0, ApplyShortcut, () => SetLog(null), BrowseLog))
+        {
+            overlaySettingsDialog = dialog;
+            try
+            {
+                dialog.UpdateLog(log.Path, Status(), log.Available);
+                dialog.ShowDialog(this);
+            }
+            finally
+            {
+                overlaySettingsDialog = null;
+            }
+        }
+    }
+
+    private bool ApplyShortcut(Keys shortcut)
+    {
+        if (!TryRegisterShortcut(shortcut)) return false;
+        settings.ClickThroughShortcut = shortcut;
+        ScheduleSave();
+        return true;
+    }
+
+    private bool TryRegisterShortcut(Keys shortcut)
+    {
+        if (activeShortcutId != 0 && shortcut == settings.ClickThroughShortcut) return true;
+        int id = activeShortcutId == Native.LockShortcut ? Native.AlternateLockShortcut : Native.LockShortcut;
+        if (!OverlayHotkey.Register(Handle, id, shortcut)) return false;
+
+        // Keep the current shortcut available until Windows accepts the replacement.
+        if (activeShortcutId != 0 && !Native.UnregisterHotKey(Handle, activeShortcutId))
+        {
+            Native.UnregisterHotKey(Handle, id);
+            return false;
+        }
+
+        activeShortcutId = id;
+        overlay.SetClickThroughShortcut(OverlayHotkey.Format(shortcut));
+        return true;
     }
 
     private void StoreOverlayBounds(Rectangle bounds)
@@ -589,14 +599,14 @@ internal sealed class EditorForm : Form
         SelectAct(selectedAct);
     }
 
-    private void Browse()
+    private void BrowseLog(IWin32Window owner)
     {
         using (var dialog = new OpenFileDialog { Title = UiText.Get("Выберите журнал Path of Exile 1", "Choose the Path of Exile 1 log"),
             FileName = "Client.txt", Filter = UiText.Get("Журнал Path of Exile (Client.txt)|Client.txt|Текстовые файлы (*.txt)|*.txt",
                 "Path of Exile log (Client.txt)|Client.txt|Text files (*.txt)|*.txt") })
         {
             if (log.Path != null) dialog.InitialDirectory = Path.GetDirectoryName(log.Path);
-            if (dialog.ShowDialog(this) == DialogResult.OK) SetLog(dialog.FileName);
+            if (dialog.ShowDialog(owner) == DialogResult.OK) SetLog(dialog.FileName);
         }
     }
 
@@ -612,9 +622,8 @@ internal sealed class EditorForm : Form
     private void Poll()
     {
         log.Poll();
-        logPath.Text = log.Path ?? UiText.Get(@"Выберите файл logs\Client.txt в папке игры", @"Choose logs\Client.txt in the game folder");
-        trackingStatus.ForeColor = log.Available ? Theme.Accent : Theme.Warning;
-        trackingStatus.Text = Status();
+        if (overlaySettingsDialog != null)
+            overlaySettingsDialog.UpdateLog(log.Path, Status(), log.Available);
         UpdateOverlay();
     }
 
@@ -639,7 +648,7 @@ internal sealed class EditorForm : Form
         OverlayProfile profile = settings.ActiveProfile;
         profileStatus.Visible = profile.IsBuiltIn;
         profileStatus.Text = profile.ContentReadOnly
-            ? UiText.Get("Встроенный · только чтение", "Built-in · read-only")
+            ? UiText.Get("Встроенный профиль", "Built-in profile")
             : UiText.Get("Редактирование оригинала · RU", "Editing the original · EN");
         deleteProfileButton.Enabled = !profile.IsBuiltIn && settings.Profiles.Count > 1;
         for (int i = 0; i < actButtons.Length; i++)
@@ -650,6 +659,7 @@ internal sealed class EditorForm : Form
         }
         RefreshTaskGrid();
         routeEditor.LoadAct(act, settings.Routes[act - 1], profile.ContentReadOnly);
+        UpdateResetButton();
         if (previewAct.HasValue) previewAct = act;
         UpdateOverlay();
     }
@@ -678,25 +688,19 @@ internal sealed class EditorForm : Form
 
     private void LoadPassiveProfile()
     {
-        passiveLink.Text = settings.ActiveProfile.PassiveBuildLink ?? "";
-        passiveLinkError.Visible = false;
-        if (settings.Mode == HintMode.Passives) overlay.SetPassiveLink(settings.ActiveProfile.PassiveBuildLink);
+        passivesEditor.LoadProfile(settings.ActiveProfile);
+        ApplyOverlayMode();
     }
 
-    private void ApplyPassiveLink()
+    private void OpenPassiveBuild(int index, bool reload)
     {
-        string text = passiveLink.Text.Trim();
-        string link = null;
-        if (text.Length > 0 && !PassiveBuild.TryNormalizeLink(text, out link))
-        {
-            passiveLinkError.Visible = true;
-            return;
-        }
-        passiveLink.Text = link ?? "";
-        settings.ActiveProfile.PassiveBuildLink = link;
+        OverlayProfile profile = settings.ActiveProfile;
+        if (index < 0 || index >= profile.PassiveBuilds.Count) return;
+        profile.ActivePassiveBuildIndex = index;
         settings.Mode = HintMode.Passives;
-        ApplyOverlayMode(reloadPassives: true);
-        overlay.BringToFront();
+        passivesEditor.SelectBuild(index);
+        ApplyOverlayMode(reload);
+        if (reload) overlay.BringToFront();
         ScheduleSave();
     }
 
@@ -705,7 +709,8 @@ internal sealed class EditorForm : Form
         HintMode mode = settings.Mode;
         overlay.SetMode(mode, settings.ShowRoute);
         previewButton.Enabled = mode != HintMode.Passives;
-        if (mode == HintMode.Passives) overlay.SetPassiveLink(settings.ActiveProfile.PassiveBuildLink, reloadPassives);
+        if (mode == HintMode.Passives)
+            overlay.SetPassiveBuilds(settings.ActiveProfile.PassiveBuilds, settings.ActiveProfile.ActivePassiveBuildIndex, reloadPassives);
     }
 
     private void ChangeLanguage(bool english)
@@ -730,7 +735,7 @@ internal sealed class EditorForm : Form
         englishButton.BackColor = UiText.English ? Theme.Accent : Theme.Control;
         englishButton.ForeColor = UiText.English ? Theme.Background : Theme.Text;
         profilePicker.AccessibleName = UiText.Get("Активный профиль", "Active profile");
-        passiveLink.AccessibleName = UiText.Get("Ссылка на билд pobb.in", "pobb.in build link");
+        passivesEditor.RefreshLanguage();
         regexEditor.RefreshLanguage();
         taskGrid.Columns[0].HeaderCell.ToolTipText = UiText.Get("Выполнено", "Completed");
         taskGrid.Columns[1].HeaderText = UiText.Get("Условие", "Condition");
@@ -823,7 +828,7 @@ internal sealed class EditorForm : Form
 
     private void SetTaskDone(ActTask task, bool done)
     {
-        if (settings.ActiveProfile.IsBuiltIn || task.Done == done) return;
+        if (task.Done == done) return;
         task.Done = done;
         foreach (DataGridViewRow row in taskGrid.Rows)
         {
@@ -833,24 +838,50 @@ internal sealed class EditorForm : Form
             break;
         }
         overlay.SyncCompletion(task);
+        UpdateResetButton();
         ScheduleSave();
     }
 
     private void SetRouteNoteDone(RouteNote note, bool done)
     {
-        if (settings.ActiveProfile.IsBuiltIn || note.Done == done) return;
+        if (note.Done == done) return;
         note.Done = done;
         routeEditor.SyncCompletion(note);
         overlay.SyncCompletion(note);
+        UpdateResetButton();
         ScheduleSave();
+    }
+
+    private void UpdateResetButton()
+    {
+        resetChecksButton.Enabled = SelectedActTasks.Any(task => task.Done) || settings.Routes[selectedAct - 1].Any(note => note.Done);
+    }
+
+    private void ResetActCompletion()
+    {
+        if (!resetChecksButton.Enabled) return;
+        int act = selectedAct;
+        OverlayProfile profile = settings.ActiveProfile;
+        string prompt = String.Format(UiText.Get("Снять все галочки в задачах и маршруте акта {0} в профиле «{1}»?",
+            "Clear all checkmarks in Act {0} tasks and route notes in the “{1}” profile?"), act, profile);
+        if (MessageBox.Show(this, prompt, resetChecksButton.Text, MessageBoxButtons.YesNo,
+            MessageBoxIcon.Question, MessageBoxDefaultButton.Button2) != DialogResult.Yes) return;
+
+        foreach (ActTask task in profile.Tasks[act - 1]) SetTaskDone(task, false);
+        foreach (RouteNote note in profile.Routes[act - 1]) SetRouteNoteDone(note, false);
     }
 
     private void ScheduleProfileSave()
     {
 #if EDIT_DEFAULT_PROFILE
         OverlayProfile profile = settings.ActiveProfile;
-        if (profile.IsBuiltIn && !profile.ContentReadOnly) defaultProfileDirty = true;
+        if (profile.IsBuiltIn && !profile.ContentReadOnly)
+        {
+            BuiltInProfile.UpdateDefault(profile);
+            defaultProfileDirty = true;
+        }
 #endif
+        UpdateResetButton();
         ScheduleSave();
     }
 
@@ -899,14 +930,13 @@ internal sealed class EditorForm : Form
 
     private void UpdateOverlay(bool tasksEdited = false, bool routeEdited = false)
     {
-        overlay.SetProfileReadOnly(settings.ActiveProfile.IsBuiltIn);
         string preview = UiText.Get("Предпросмотр", "Preview");
         previewButton.Text = previewAct.HasValue ? UiText.Get("Вернуться в авто", "Back to auto") : preview;
         int? act = previewAct ?? log.Act;
         string title = act.HasValue ? UiText.Get("Акт ", "Act ") + act.Value : UiText.Get("Кампания", "Campaign");
         string subtitle = previewAct.HasValue ? preview : (act.HasValue ? CurrentZone : Status());
         List<ActTask> tasks = act.HasValue ? settings.Tasks[act.Value - 1] : null;
-        string connectLog = UiText.Get("Подключите журнал игры в редакторе.", "Connect the game log in the editor.");
+        string connectLog = UiText.Get("Подключите журнал игры в настройках редактора.", "Connect the game log in the editor settings.");
         string noTasks = settings.ActiveProfile.IsBuiltIn ? UiText.Get("В этом акте нет задач. Маршрут доступен в соседнем режиме.",
             "This act has no tasks. Switch to Route to see the walkthrough.") : UiText.Get("Задач пока нет. Добавьте их через «Правка».", "No tasks yet. Use Edit to add some.");
         string empty = act.HasValue ? noTasks :
@@ -915,19 +945,81 @@ internal sealed class EditorForm : Form
         List<RouteNote> route = act.HasValue ? settings.Routes[act.Value - 1] : null;
         string emptyRoute = act.HasValue ? UiText.Get("Маршрут пока пуст. Добавьте заметки через «Правка».", "No route notes yet. Use Edit to add some.") :
             log.Available ? UiText.Get("Маршрут появится при входе в область кампании.", "Route notes appear when you enter a campaign area.") : connectLog;
-        string currentArea = !previewAct.HasValue && act.HasValue ? log.AreaId : null;
-        overlay.SetRouteNotes(route, emptyRoute, currentArea, routeEdited && act == selectedAct);
+        overlay.SetRouteNotes(route, emptyRoute, routeEdited && act == selectedAct);
     }
 }
 
-internal sealed class OverlayAppearanceDialog : Form
+internal static class OverlayHotkey
 {
-    public OverlayAppearanceDialog(int transparency, Action<int> changed)
+    public const Keys Default = Keys.Control | Keys.Shift | Keys.D9;
+    public static readonly Keys[] KeyChoices = KeyRange(Keys.D0, Keys.D9)
+        .Concat(KeyRange(Keys.A, Keys.Z))
+        .Concat(KeyRange(Keys.F1, Keys.F24))
+        .Concat(KeyRange(Keys.NumPad0, Keys.NumPad9))
+        .Concat(new[] { Keys.Space, Keys.Enter, Keys.Tab, Keys.Escape, Keys.Back, Keys.Insert, Keys.Delete,
+            Keys.Home, Keys.End, Keys.PageUp, Keys.PageDown, Keys.Left, Keys.Up, Keys.Right, Keys.Down })
+        .ToArray();
+    private static readonly KeysConverter KeyNames = new KeysConverter();
+
+    private static IEnumerable<Keys> KeyRange(Keys first, Keys last)
     {
+        for (Keys key = first; key <= last; key++) yield return key;
+    }
+
+    public static bool IsValid(Keys shortcut)
+    {
+        Keys key = shortcut & Keys.KeyCode;
+        Keys modifiers = shortcut & Keys.Modifiers;
+        return (modifiers & ~(Keys.Control | Keys.Shift | Keys.Alt)) == Keys.None && KeyChoices.Contains(key) &&
+            (modifiers != Keys.None || (key >= Keys.F1 && key <= Keys.F24));
+    }
+
+    public static string KeyName(Keys key) { return KeyNames.ConvertToInvariantString(key); }
+
+    public static string Format(Keys shortcut)
+    {
+        return ((shortcut & Keys.Control) != 0 ? "Ctrl+" : "") +
+            ((shortcut & Keys.Shift) != 0 ? "Shift+" : "") +
+            ((shortcut & Keys.Alt) != 0 ? "Alt+" : "") +
+            KeyName(shortcut & Keys.KeyCode);
+    }
+
+    public static bool Register(IntPtr window, int id, Keys shortcut)
+    {
+        if (!IsValid(shortcut)) return false;
+        uint modifiers = Native.NoHotkeyRepeat;
+        if ((shortcut & Keys.Control) != 0) modifiers |= Native.HotkeyControl;
+        if ((shortcut & Keys.Shift) != 0) modifiers |= Native.HotkeyShift;
+        if ((shortcut & Keys.Alt) != 0) modifiers |= Native.HotkeyAlt;
+        return Native.RegisterHotKey(window, id, modifiers, (uint)(shortcut & Keys.KeyCode));
+    }
+}
+
+internal sealed class OverlaySettingsDialog : Form
+{
+    private readonly CheckBox control;
+    private readonly CheckBox shift;
+    private readonly CheckBox alt;
+    private readonly ComboBox keyPicker;
+    private readonly Button apply;
+    private readonly Button reset;
+    private readonly Label shortcutStatus;
+    private readonly Label trackingStatus;
+    private readonly Label logPath;
+    private readonly Func<Keys, bool> applyShortcut;
+    private Keys currentShortcut;
+    private bool shortcutRegistered;
+
+    public OverlaySettingsDialog(int transparency, Action<int> changed, Keys shortcut, bool registered,
+        Func<Keys, bool> applyShortcut, Action findLog, Action<IWin32Window> browseLog)
+    {
+        this.applyShortcut = applyShortcut;
+        currentShortcut = shortcut;
+        shortcutRegistered = registered;
         SuspendLayout();
-        Text = UiText.Get("Настройки оверлея", "Overlay settings");
+        Text = UiText.Get("Настройки", "Settings");
         Theme.StyleWindow(this);
-        ClientSize = new Size(460, 195);
+        ClientSize = new Size(460, 482);
         FormBorderStyle = FormBorderStyle.FixedDialog;
         StartPosition = FormStartPosition.CenterParent;
         MaximizeBox = MinimizeBox = false;
@@ -957,15 +1049,128 @@ internal sealed class OverlayAppearanceDialog : Form
         var high = Theme.Label(this, "80% · Прозрачнее", 9, Theme.Muted, new Rectangle(244, 92, 196, 22),
             english: "80% · More transparent");
         high.TextAlign = ContentAlignment.MiddleRight;
-        Theme.Label(this, "Изменения видны сразу и сохраняются автоматически.", 9, Theme.Muted,
-            new Rectangle(20, 120, 420, 24), english: "Changes preview live and save automatically.");
-        var close = Theme.Button(this, "Готово", new Rectangle(330, 151, 110, 30), english: "Done");
+        Theme.Label(this, "Прозрачность сохраняется автоматически.", 9, Theme.Muted,
+            new Rectangle(20, 118, 420, 24), english: "Transparency saves automatically.");
+
+        Theme.Panel(this, Theme.Divider, new Rectangle(20, 151, 420, 1));
+        Theme.Label(this, "Горячая клавиша режима «Сквозь»", 13, Theme.Text, new Rectangle(20, 161, 420, 32),
+            true, "Click-through shortcut");
+        control = AddModifier("Ctrl", 20);
+        shift = AddModifier("Shift", 77);
+        alt = AddModifier("Alt", 134);
+        keyPicker = new ComboBox
+        {
+            Bounds = new Rectangle(189, 203, 127, 30), DropDownStyle = ComboBoxStyle.DropDownList,
+            FlatStyle = FlatStyle.Flat, BackColor = Theme.Control, ForeColor = Theme.Text, Font = new Font("Segoe UI", 9),
+            FormattingEnabled = true, AccessibleName = UiText.Get("Клавиша сочетания", "Shortcut key")
+        };
+        Theme.StylePicker(keyPicker);
+        keyPicker.Format += (sender, args) => args.Value = OverlayHotkey.KeyName((Keys)args.ListItem);
+        keyPicker.Items.AddRange(OverlayHotkey.KeyChoices.Select(key => (object)key).ToArray());
+        Controls.Add(keyPicker);
+        apply = Theme.Button(this, "Применить", new Rectangle(330, 200, 110, 30),
+            (sender, args) => ApplyShortcut(SelectedShortcut), english: "Apply");
+        shortcutStatus = Theme.Label(this, "", 9, Theme.Muted, new Rectangle(20, 234, 420, 34));
+        reset = Theme.Button(this, "По умолчанию", new Rectangle(20, 270, 133, 30), (sender, args) =>
+        {
+            SelectShortcut(OverlayHotkey.Default);
+            ApplyShortcut(OverlayHotkey.Default);
+        }, english: "Restore default");
+
+        SelectShortcut(shortcut);
+        control.CheckedChanged += (sender, args) => UpdateShortcutStatus();
+        shift.CheckedChanged += (sender, args) => UpdateShortcutStatus();
+        alt.CheckedChanged += (sender, args) => UpdateShortcutStatus();
+        keyPicker.SelectedIndexChanged += (sender, args) => UpdateShortcutStatus();
+        UpdateShortcutStatus();
+
+        var connection = Theme.Panel(this, Theme.Surface, new Rectangle(20, 316, 420, 106));
+        trackingStatus = Theme.Label(connection, "", 11, Theme.Accent, new Rectangle(14, 8, 392, 24), true);
+        logPath = Theme.Label(connection, "", 9, Theme.Muted, new Rectangle(14, 35, 392, 25));
+        Theme.Button(connection, "Автопоиск", new Rectangle(206, 65, 86, 29), (sender, args) => findLog(), english: "Find log");
+        Theme.Button(connection, "Выбрать…", new Rectangle(300, 65, 106, 29), (sender, args) => browseLog(this), english: "Browse…");
+
+        var close = Theme.Button(this, "Готово", new Rectangle(330, 438, 110, 30), english: "Done");
         close.DialogResult = DialogResult.OK;
         close.BackColor = Theme.Accent;
         close.ForeColor = Theme.Background;
         AcceptButton = CancelButton = close;
         ActiveControl = slider;
         ResumeLayout(false);
+    }
+
+    public void UpdateLog(string path, string status, bool available)
+    {
+        trackingStatus.Text = status;
+        trackingStatus.ForeColor = available ? Theme.Accent : Theme.Warning;
+        logPath.Text = path ?? UiText.Get(@"Выберите файл logs\Client.txt в папке игры", @"Choose logs\Client.txt in the game folder");
+    }
+
+    private CheckBox AddModifier(string name, int x)
+    {
+        var check = new CheckBox
+        {
+            Text = name, Bounds = new Rectangle(x, 200, 55, 30), ForeColor = Theme.Text,
+            FlatStyle = FlatStyle.Flat, Font = new Font("Segoe UI", 9)
+        };
+        Controls.Add(check);
+        return check;
+    }
+
+    private Keys SelectedShortcut
+    {
+        get
+        {
+            Keys shortcut = keyPicker.SelectedItem as Keys? ?? Keys.None;
+            if (control.Checked) shortcut |= Keys.Control;
+            if (shift.Checked) shortcut |= Keys.Shift;
+            if (alt.Checked) shortcut |= Keys.Alt;
+            return shortcut;
+        }
+    }
+
+    private void SelectShortcut(Keys shortcut)
+    {
+        keyPicker.SelectedItem = shortcut & Keys.KeyCode;
+        control.Checked = (shortcut & Keys.Control) != 0;
+        shift.Checked = (shortcut & Keys.Shift) != 0;
+        alt.Checked = (shortcut & Keys.Alt) != 0;
+    }
+
+    private void UpdateShortcutStatus()
+    {
+        Keys selected = SelectedShortcut;
+        bool valid = OverlayHotkey.IsValid(selected);
+        apply.Enabled = valid && (!shortcutRegistered || selected != currentShortcut);
+        reset.Enabled = currentShortcut != OverlayHotkey.Default || selected != OverlayHotkey.Default;
+        shortcutStatus.ForeColor = valid && shortcutRegistered ? Theme.Muted : Theme.Warning;
+        shortcutStatus.Text = !valid
+            ? UiText.Get("Добавьте Ctrl, Shift или Alt либо выберите клавишу F1–F24.",
+                "Add Ctrl, Shift, or Alt, or choose a key from F1–F24.")
+            : CurrentShortcutStatus();
+    }
+
+    private string CurrentShortcutStatus()
+    {
+        string name = OverlayHotkey.Format(currentShortcut);
+        return shortcutRegistered
+            ? String.Format(UiText.Get("Действует {0}", "Active shortcut · {0}"), name)
+            : String.Format(UiText.Get("{0} недоступно", "{0} is unavailable"), name);
+    }
+
+    private void ApplyShortcut(Keys shortcut)
+    {
+        if (!applyShortcut(shortcut))
+        {
+            shortcutStatus.ForeColor = Theme.Warning;
+            shortcutStatus.Text = String.Format(UiText.Get("{0} недоступно.", "{0} is unavailable."), OverlayHotkey.Format(shortcut));
+            if (shortcutRegistered) shortcutStatus.Text += " " + CurrentShortcutStatus() + ".";
+            return;
+        }
+
+        currentShortcut = shortcut;
+        shortcutRegistered = true;
+        UpdateShortcutStatus();
     }
 }
 
@@ -1046,7 +1251,6 @@ internal sealed class TaskDialog : Form
 
 internal sealed class HintOverlay : Form
 {
-    private const string ClickThroughShortcut = "Ctrl+Shift+9";
     private readonly Label modeLabel;
     private readonly Label heading;
     private readonly Label subtitle;
@@ -1076,22 +1280,18 @@ internal sealed class HintOverlay : Form
     private int resizeVertical;
     private bool dragging;
     private bool locked;
-    private bool shortcutReady;
+    private string clickThroughShortcut;
     private HintMode mode;
     private bool showRoute;
-    private bool profileReadOnly;
     private int transparencyPercent;
     private List<ActTask> displayedTasks;
     private string displayedEmptyText;
     private List<RouteNote> displayedRoute;
     private string displayedRouteEmptyText;
-    private string displayedArea;
-    private RouteNote lastRouteMatch;
-    private Control pendingRouteScroll;
 
     public HintOverlay(Action edit, Action<Rectangle> boundsChanged, Action<ActTask, bool> taskDone,
         Action<RouteNote, bool> routeNoteDone, Action switchCampaign, Action togglePassives,
-        int transparency = OverlaySettings.DefaultOverlayTransparency)
+        Action<int> selectBuild, int transparency = OverlaySettings.DefaultOverlayTransparency)
     {
         this.boundsChanged = boundsChanged;
         this.taskDone = taskDone;
@@ -1123,6 +1323,7 @@ internal sealed class HintOverlay : Form
         modeButton.ForeColor = Theme.Accent;
         var editButton = Theme.Button(this, "Правка", new Rectangle(222, 10, 65, 24), (sender, args) => edit(), english: "Edit");
         lockButton = Theme.Button(this, "Сквозь", new Rectangle(294, 10, 70, 24), (sender, args) => ToggleClickThrough(), english: "Lock");
+        lockButton.Enabled = false;
         passivesButton.Anchor = modeButton.Anchor = editButton.Anchor = lockButton.Anchor = AnchorStyles.Top | AnchorStyles.Right;
 
         body = CreateCardList();
@@ -1130,13 +1331,12 @@ internal sealed class HintOverlay : Form
         routeBody = CreateCardList();
         routeBody.AccessibleName = UiText.Get("Маршрут текущего акта", "Route for the current act");
         Controls.Add(routeBody);
-        passiveView = new PassiveTreeView { Location = new Point(16, 44), Visible = false };
+        passiveView = new PassiveTreeView(selectBuild) { Location = new Point(16, 44), Visible = false };
         Controls.Add(passiveView);
         footer = Theme.Label(this, "", 8, Theme.Muted, new Rectangle(16, 292, 348, 24));
         footer.Anchor = AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
         body.SizeChanged += (sender, args) => ResizeCards(body);
         routeBody.SizeChanged += (sender, args) => ResizeCards(routeBody);
-        routeBody.VisibleChanged += (sender, args) => ScrollToCurrentRoute();
 
         AddResizeHandle(new Rectangle(3, 0, 11, 14), AnchorStyles.Top | AnchorStyles.Left, Cursors.SizeNWSE, -1, -1);
         AddResizeHandle(new Rectangle(14, 0, 352, 6), AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right, Cursors.SizeNS, 0, -1);
@@ -1218,16 +1418,16 @@ internal sealed class HintOverlay : Form
         }
     }
 
-    public void AllowClickThrough(bool registered)
+    public void SetClickThroughShortcut(string shortcut)
     {
-        shortcutReady = registered;
-        lockButton.Enabled = registered;
+        clickThroughShortcut = shortcut;
+        lockButton.Enabled = shortcut != null;
         UpdateFooter();
     }
 
     public void ToggleClickThrough()
     {
-        if (!shortcutReady) return;
+        if (clickThroughShortcut == null) return;
         locked = !locked;
         lockButton.BackColor = locked ? Theme.Accent : Theme.Control;
         lockButton.ForeColor = locked ? Theme.Background : Theme.Text;
@@ -1296,13 +1496,14 @@ internal sealed class HintOverlay : Form
     {
         if (mode == HintMode.Passives)
             footer.Text = locked
-                ? UiText.Get("Для управления деревом нажмите ", "Unlock the tree with ") + ClickThroughShortcut
+                ? UiText.Get("Для управления деревом нажмите ", "Unlock the tree with ") + clickThroughShortcut
                 : UiText.Get("Колесо меняет масштаб · Потяните дерево", "Wheel to zoom · Drag to pan");
         else if (locked && wheelHook != IntPtr.Zero)
-            footer.Text = UiText.Get("Сквозь  ·  Колесо над списком  ·  ", "Click-through  ·  Wheel over list  ·  ") + ClickThroughShortcut;
+            footer.Text = UiText.Get("Сквозь  ·  Колесо над списком  ·  ", "Click-through  ·  Wheel over list  ·  ") + clickThroughShortcut;
         else if (locked)
-            footer.Text = UiText.Get("Прокрутка недоступна  ·  ", "Wheel unavailable  ·  ") + ClickThroughShortcut;
-        else if (shortcutReady) footer.Text = UiText.Get("Перетащите за заголовок  ·  ", "Drag the header  ·  ") + ClickThroughShortcut;
+            footer.Text = UiText.Get("Прокрутка недоступна  ·  ", "Wheel unavailable  ·  ") + clickThroughShortcut;
+        else if (clickThroughShortcut != null)
+            footer.Text = UiText.Get("Перетащите за заголовок  ·  ", "Drag the header  ·  ") + clickThroughShortcut;
         else footer.Text = UiText.Get("Перетащите за заголовок  ·  Горячая клавиша занята", "Drag the header  ·  Shortcut unavailable");
     }
 
@@ -1347,9 +1548,9 @@ internal sealed class HintOverlay : Form
         UpdateProgress();
     }
 
-    public void SetPassiveLink(string link, bool reload = false)
+    public void SetPassiveBuilds(List<SavedPassiveBuild> builds, int activeIndex, bool reload)
     {
-        passiveView.SetLink(link, reload);
+        passiveView.SetBuilds(builds, activeIndex, reload);
     }
 
     public void SetMode(HintMode value, bool campaignRoute)
@@ -1378,76 +1579,25 @@ internal sealed class HintOverlay : Form
         UpdateProgress();
     }
 
-    public void SetProfileReadOnly(bool readOnly)
-    {
-        if (profileReadOnly == readOnly) return;
-        profileReadOnly = readOnly;
-        displayedTasks = null;
-        displayedRoute = null;
-        UpdateProgress();
-    }
-
-    public void SetRouteNotes(List<RouteNote> notes, string emptyText, string currentArea, bool refresh)
+    public void SetRouteNotes(List<RouteNote> notes, string emptyText, bool refresh)
     {
         bool empty = notes == null || notes.Count == 0;
         bool sameRoute = notes == displayedRoute;
-        bool areaChanged = currentArea != displayedArea;
-        if (!refresh && sameRoute && !areaChanged && (!empty || emptyText == displayedRouteEmptyText)) return;
+        if (!refresh && sameRoute && (!empty || emptyText == displayedRouteEmptyText)) return;
 
         int scroll = sameRoute ? -routeBody.AutoScrollPosition.Y : 0;
-        bool follow = !sameRoute || areaChanged || pendingRouteScroll != null;
-        if (!sameRoute) lastRouteMatch = null;
-        int currentIndex = empty || currentArea == null ? -1 : FindRouteMatch(notes, currentArea);
-        if (currentIndex >= 0) lastRouteMatch = notes[currentIndex];
-        int endOfVisit = currentIndex;
-        if (currentIndex >= 0)
-            while (endOfVisit + 1 < notes.Count && notes[endOfVisit + 1].AreaId == currentArea) endOfVisit++;
         displayedRoute = notes;
         displayedRouteEmptyText = emptyText;
-        displayedArea = currentArea;
-        pendingRouteScroll = null;
         routeCheckboxes.Clear();
         RebuildCards(routeBody, scroll, empty ? emptyText : null, width =>
         {
-            for (int i = 0; i < notes.Count; i++)
+            foreach (RouteNote note in notes)
             {
-                RouteNote note = notes[i];
                 string title = String.IsNullOrEmpty(note.AreaId) ? null : CampaignAreas.NameOf(note.AreaId);
-                if (i == currentIndex) title = UiText.Get("Вы здесь", "You are here") + " · " + title;
-                bool currentVisit = i >= currentIndex && i <= endOfVisit;
-                CheckBox check = AddCard(routeBody, width, title, note.Text, note.Done, done => routeNoteDone(note, done), currentVisit);
-                routeCheckboxes.Add(note, check);
-                if (follow && i == currentIndex) pendingRouteScroll = check.Parent;
+                routeCheckboxes.Add(note, AddCard(routeBody, width, title, note.Text, note.Done, done => routeNoteDone(note, done)));
             }
         });
-        ScrollToCurrentRoute();
         UpdateProgress();
-    }
-
-    private int FindRouteMatch(List<RouteNote> notes, string area)
-    {
-        // A route can return to the same area later. Use the visit closest to the last match.
-        int anchor = notes.IndexOf(lastRouteMatch);
-        int best = -1;
-        int distance = Int32.MaxValue;
-        for (int i = 0; i < notes.Count; i++)
-        {
-            if (notes[i].AreaId != area) continue;
-            int candidateDistance = Math.Abs(i - anchor);
-            if (candidateDistance > distance || (candidateDistance == distance && i < anchor)) continue;
-            best = i;
-            distance = candidateDistance;
-        }
-        while (best > 0 && notes[best - 1].AreaId == area) best--;
-        return best;
-    }
-
-    private void ScrollToCurrentRoute()
-    {
-        if (pendingRouteScroll == null || !routeBody.Visible) return;
-        routeBody.PerformLayout();
-        routeBody.AutoScrollPosition = new Point(0, pendingRouteScroll.Top - routeBody.AutoScrollPosition.Y);
-        pendingRouteScroll = null;
     }
 
     private void RebuildCards(FlowLayoutPanel list, int scroll, string emptyText, Action<int> addCards)
@@ -1481,28 +1631,21 @@ internal sealed class HintOverlay : Form
         list.AutoScrollPosition = new Point(0, scroll);
     }
 
-    private CheckBox AddCard(FlowLayoutPanel list, int width, string title, string text, bool done, Action<bool> setDone,
-        bool currentVisit = false)
+    private CheckBox AddCard(FlowLayoutPanel list, int width, string title, string text, bool done, Action<bool> setDone)
     {
         var card = Theme.Card();
-        if (currentVisit) card.BackColor = Theme.Selected;
         card.Width = width;
         card.Margin = new Padding(0, 0, 0, Pixels(7));
         bool hasTitle = !String.IsNullOrWhiteSpace(title);
         bool hasText = !String.IsNullOrWhiteSpace(text);
-        Color titleColor = currentVisit ? Theme.Accent : Theme.Text;
-        Label header = hasTitle && hasText ? AddCardText(card, title, 10, titleColor, true) : null;
+        Label header = hasTitle && hasText ? AddCardText(card, title, true) : null;
         string caption = hasText ? text : title ?? "";
-        var content = AddCardText(card, caption, 10, hasText ? Theme.Text : titleColor, hasTitle && !hasText);
-        if (!currentVisit || hasText) content.ResetForeColor();
-        var check = new OverlayCheckBox { Checked = done, AccessibleName = caption, TabStop = false, Enabled = !profileReadOnly };
-        if (!profileReadOnly)
-        {
-            check.Cursor = Cursors.Hand;
-            check.CheckedChanged += (sender, args) => setDone(check.Checked);
-            content.Cursor = Cursors.Hand;
-            content.Click += (sender, args) => check.Checked = !check.Checked;
-        }
+        var content = AddCardText(card, caption, hasTitle && !hasText);
+        content.ResetForeColor();
+        var check = new OverlayCheckBox { Checked = done, AccessibleName = caption, TabStop = false, Cursor = Cursors.Hand };
+        check.CheckedChanged += (sender, args) => setDone(check.Checked);
+        content.Cursor = Cursors.Hand;
+        content.Click += (sender, args) => check.Checked = !check.Checked;
         card.Controls.Add(check);
         ArrangeCard(card, header, content, check);
         card.SizeChanged += (sender, args) => ArrangeCard(card, header, content, check);
@@ -1511,9 +1654,9 @@ internal sealed class HintOverlay : Form
         return check;
     }
 
-    private static Label AddCardText(Panel card, string text, int size, Color color, bool bold)
+    private static Label AddCardText(Panel card, string text, bool bold)
     {
-        var label = Theme.Label(card, text, size, color, Rectangle.Empty, bold);
+        var label = Theme.Label(card, text, 10, Theme.Text, Rectangle.Empty, bold);
         label.AutoEllipsis = false;
         label.TextAlign = ContentAlignment.TopLeft;
         return label;
@@ -1569,12 +1712,6 @@ internal sealed class HintOverlay : Form
 
     private void UpdateProgress()
     {
-        if (profileReadOnly)
-        {
-            bool inAct = showRoute ? displayedRoute != null : displayedTasks != null;
-            progress.Text = inAct ? UiText.Get("Только чтение", "Read-only") : "";
-            return;
-        }
         progress.Text = mode == HintMode.Route ? CompletionText(displayedRoute, note => note.Done) : CompletionText(displayedTasks, task => task.Done);
     }
 
@@ -1681,6 +1818,12 @@ internal sealed class HintOverlay : Form
 internal static class Native
 {
     public const int LockShortcut = 1;
+    public const int AlternateLockShortcut = 2;
+    public const int HotkeyMessage = 0x0312;
+    public const uint HotkeyAlt = 0x0001;
+    public const uint HotkeyControl = 0x0002;
+    public const uint HotkeyShift = 0x0004;
+    public const uint NoHotkeyRepeat = 0x4000;
     public const int ExtendedStyle = -20;
     public const int Transparent = 0x20;
     public const int Layered = 0x80000;

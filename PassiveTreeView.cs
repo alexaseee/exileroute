@@ -12,6 +12,7 @@ using System.Xml;
 
 internal sealed class PassiveTreeView : Panel
 {
+    private readonly ComboBox buildPicker;
     private readonly ComboBox presets;
     private readonly PassiveTreeCanvas canvas;
     private readonly Label status;
@@ -24,22 +25,26 @@ internal sealed class PassiveTreeView : Panel
     private string link;
     private PassivePreset selected;
 
-    public PassiveTreeView()
+    public PassiveTreeView(Action<int> selectBuild)
     {
         Size = new Size(348, 244);
         Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
-        presets = new ComboBox { Bounds = new Rectangle(0, 0, 223, 26), DropDownStyle = ComboBoxStyle.DropDownList,
-            Font = new Font("Segoe UI", 10), BackColor = Theme.Surface, ForeColor = Theme.Text,
-            Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right, DropDownWidth = 223 };
-        Theme.StylePicker(presets);
-        Controls.Add(presets);
+        Theme.Label(this, "Билд", 9, Theme.Muted, new Rectangle(0, 0, 58, 26), english: "Build");
+        buildPicker = AddPicker(new Rectangle(62, 0, 286, 26));
+        buildPicker.Enabled = false;
+        buildPicker.SelectionChangeCommitted += (sender, args) =>
+        {
+            if (buildPicker.SelectedIndex >= 0) selectBuild(buildPicker.SelectedIndex);
+        };
+        Theme.Label(this, "Пресет", 9, Theme.Muted, new Rectangle(0, 32, 58, 26), english: "Preset");
+        presets = AddPicker(new Rectangle(62, 32, 161, 26));
         presets.SelectedIndexChanged += (sender, args) => SelectPreset(presets.SelectedItem as PassivePreset);
-        zoomOut = Theme.Button(this, "−", new Rectangle(230, 0, 28, 26), (sender, args) => canvas.Zoom(1 / 1.25f), focusable: false);
-        zoomIn = Theme.Button(this, "+", new Rectangle(262, 0, 28, 26), (sender, args) => canvas.Zoom(1.25f), focusable: false);
-        fit = Theme.Button(this, "Всё", new Rectangle(294, 0, 54, 26), (sender, args) => canvas.Fit(), focusable: false, english: "Fit");
+        zoomOut = Theme.Button(this, "−", new Rectangle(230, 32, 28, 26), (sender, args) => canvas.Zoom(1 / 1.25f), focusable: false);
+        zoomIn = Theme.Button(this, "+", new Rectangle(262, 32, 28, 26), (sender, args) => canvas.Zoom(1.25f), focusable: false);
+        fit = Theme.Button(this, "Всё", new Rectangle(294, 32, 54, 26), (sender, args) => canvas.Fit(), focusable: false, english: "Fit");
         zoomOut.Anchor = zoomIn.Anchor = fit.Anchor = AnchorStyles.Top | AnchorStyles.Right;
 
-        canvas = new PassiveTreeCanvas { Bounds = new Rectangle(0, 33, 348, 211),
+        canvas = new PassiveTreeCanvas { Bounds = new Rectangle(0, 65, 348, 179),
             Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right };
         Controls.Add(canvas);
         status = Theme.Label(this, "", 10, Theme.Muted, canvas.Bounds);
@@ -60,6 +65,7 @@ internal sealed class PassiveTreeView : Panel
 
     public void RefreshLanguage()
     {
+        buildPicker.AccessibleName = UiText.Get("Активный билд", "Active build");
         presets.AccessibleName = UiText.Get("Пресет дерева", "Tree preset");
         zoomOut.AccessibleName = UiText.Get("Уменьшить масштаб", "Zoom out");
         zoomIn.AccessibleName = UiText.Get("Увеличить масштаб", "Zoom in");
@@ -70,7 +76,32 @@ internal sealed class PassiveTreeView : Panel
 
     public void ClearHover() { canvas.ClearHover(); }
 
-    public async void SetLink(string value, bool reload = false)
+    private ComboBox AddPicker(Rectangle bounds)
+    {
+        var picker = new ComboBox { Bounds = bounds, DropDownStyle = ComboBoxStyle.DropDownList,
+            Font = new Font("Segoe UI", 10), BackColor = Theme.Surface, ForeColor = Theme.Text,
+            Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right, DropDownWidth = 286 };
+        Theme.StylePicker(picker);
+        Controls.Add(picker);
+        return picker;
+    }
+
+    public void SetBuilds(List<SavedPassiveBuild> builds, int activeIndex, bool reload)
+    {
+        if (!buildPicker.Items.Cast<SavedPassiveBuild>().SequenceEqual(builds))
+        {
+            buildPicker.BeginUpdate();
+            buildPicker.Items.Clear();
+            buildPicker.Items.AddRange(builds.ToArray());
+            buildPicker.EndUpdate();
+        }
+        buildPicker.Enabled = builds.Count > 0;
+        buildPicker.SelectedIndex = builds.Count == 0 ? -1 : activeIndex;
+        var selectedBuild = (SavedPassiveBuild)buildPicker.SelectedItem;
+        SetLink(selectedBuild == null ? null : selectedBuild.Link, reload);
+    }
+
+    private async void SetLink(string value, bool reload)
     {
         if (!reload && link == value) return;
         link = value;
@@ -156,8 +187,8 @@ internal sealed class PassiveTreeView : Panel
 
     private void ShowEmpty()
     {
-        ShowStatus("Вставьте ссылку pobb.in в редакторе на вкладке «Пассивки».",
-            "Paste a pobb.in link in the editor’s Passives tab.");
+        ShowStatus("Добавьте билд pobb.in в редакторе на вкладке «Пассивки».",
+            "Add a pobb.in build in the editor’s Passives tab.");
     }
 
     private void ShowError(Exception error, bool tree)

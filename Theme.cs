@@ -192,7 +192,7 @@ internal static class Theme
         };
     }
 
-    public static DataGridView Grid(Rectangle bounds, Func<bool> canCheck = null)
+    public static DataGridView Grid(Rectangle bounds)
     {
         var grid = new DataGridView
         {
@@ -222,7 +222,7 @@ internal static class Theme
             if (cell is DataGridViewCheckBoxCell)
             {
                 args.Paint(args.ClipBounds, args.PaintParts & ~(DataGridViewPaintParts.ContentBackground | DataGridViewPaintParts.ContentForeground));
-                DrawCheck(args.Graphics, args.CellBounds, args.Value is bool && (bool)args.Value, canCheck == null || canCheck());
+                DrawCheck(args.Graphics, args.CellBounds, args.Value is bool && (bool)args.Value, true);
                 args.Handled = true;
             }
             else if (cell is DataGridViewButtonCell)
